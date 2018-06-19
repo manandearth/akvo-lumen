@@ -94,7 +94,7 @@
 
 (s/def ::l.aggregation.pivot/rows (s/coll-of ::l.aggregation.pivot/row :gen-max 3))
 
-(s/def ::l.aggregation.pivot/columns integer?)
+(s/def ::l.aggregation.pivot/columns pos-int?)
 
 (s/def ::l.aggregation.pivot/apply-query-ret
   (s/keys :req-un [::l.aggregation.pivot/rows

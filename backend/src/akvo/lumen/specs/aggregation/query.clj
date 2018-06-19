@@ -20,6 +20,6 @@
 
 (s/def ::aggregation #{"mean" "sum" "min" "max" "count"})
 
-(s/def ::categoryColumn ::column)
-(s/def ::rowColumn ::column)
-(s/def ::valueColumn ::column)
+(s/def ::categoryColumn (s/or :c ::column :n nil?))
+(s/def ::rowColumn (s/or :c ::column :n nil?))
+(s/def ::valueColumn (s/or :c ::column :n nil?))

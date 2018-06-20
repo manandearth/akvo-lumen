@@ -433,6 +433,7 @@ en/specs/transformations/merge_dataset/source.clj
 	   :command ::transformation/command))
  #+END_SRC
 
+
 * funs
 #+BEGIN_SRC clojure
 (s/fdef transformation.engine/error-strategy
@@ -501,128 +502,140 @@ en/specs/transformations/merge_dataset/source.clj
 
 * data sample 
 
-#+BEGIN_SRC clojure :tangle no
+#+BEGIN_SRC clojure :tangle no :results value pp replace
 (in-ns 'akvo.lumen.specs.transformations)
 
 (defn validate-cmd [m]
   (if (not (s/valid? ::transformation/command m))
-    (s/explain ::transformation/command m)
+    (do
+      (s/explain ::transformation/command m)
+      false) 
     true))
+:akvo.lumen.transformation/command
+(def res (partition 2 
+                   ["core/sort-column"
+                    (validate-cmd {:akvo.lumen.transformation/type :transformation,
+                                   :transformation {:args {:columnName "c1", :sortDirection "DESC"},
+                                                    :onError "fail",
+                                                    :akvo.lumen.transformation.engine/op "core/sort-column"}})
 
-"core/sort-column"
-(validate-cmd {:akvo.lumen.transformation/type :transformation,
-               :transformation {:args {:columnName "c1", :sortDirection "DESC"},
-                                :onError "fail",
-                                :akvo.lumen.transformation.engine/op "core/sort-column"}})
+                    "core/remove-sort"
+                    (validate-cmd  {:transformation
+                                    {:args {:columnName "c1"},
+                                     :onError "fail",
+                                     :akvo.lumen.transformation.engine/op "core/remove-sort"},
+                                    :akvo.lumen.transformation/type :transformation})
 
-"core/remove-sort"
-(validate-cmd  {:transformation
-                {:args {:columnName "c1"},
-                 :onError "fail",
-                 :akvo.lumen.transformation.engine/op "core/remove-sort"},
-                :akvo.lumen.transformation/type :transformation})
+                    "core/rename-column"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :newColumnTitle "col1bis"},
+                                    :onError "fail",
+                                    :akvo.lumen.transformation.engine/op "core/rename-column"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/rename-column"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :newColumnTitle "col1bis"},
-                :onError "fail",
-                :akvo.lumen.transformation.engine/op "core/rename-column"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/delete-column"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1"},
+                                    :onError "fail",
+                                    :akvo.lumen.transformation.engine/op "core/delete-column"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/delete-column"
-(validate-cmd {:transformation
-               {:args {:columnName "c1"},
-                :onError "fail",
-                :akvo.lumen.transformation.engine/op "core/delete-column"},
-               :akvo.lumen.transformation/type :transformation})
+                    "undo"
+                    (validate-cmd {:akvo.lumen.transformation/type :undo,
+                                   :transformation nil})
 
-;; undo
-(validate-cmd {:akvo.lumen.transformation/type :undo,
-               :transformation nil})
+                    "core/filter-column"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :expression {:is "b"}},
+                                    :onError "fail",
+                                    :akvo.lumen.transformation.engine/op "core/filter-column"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/filter-column"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :expression {:is "b"}},
-                :onError "fail",
-                :akvo.lumen.transformation.engine/op "core/filter-column"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/trim"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :defaultValue nil},
+                                    :onError "default-value",
+                                    :akvo.lumen.transformation.engine/op "core/trim"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/trim"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :defaultValue nil},
-                :onError "default-value",
-                :akvo.lumen.transformation.engine/op "core/trim"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/trim-doublespace"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :defaultValue nil},
+                                    :onError "default-value",
+                                    :akvo.lumen.transformation.engine/op "core/trim-doublespace"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/trim-doublespace"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :defaultValue nil},
-                :onError "default-value",
-                :akvo.lumen.transformation.engine/op "core/trim-doublespace"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/to-uppercase"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :defaultValue nil},
+                                    :onError "default-value",
+                                    :akvo.lumen.transformation.engine/op "core/to-uppercase"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/to-uppercase"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :defaultValue nil},
-                :onError "default-value",
-                :akvo.lumen.transformation.engine/op "core/to-uppercase"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/to-lowercase"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :defaultValue nil},
+                                    :onError "default-value",
+                                    :akvo.lumen.transformation.engine/op "core/to-lowercase"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/to-lowercase"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :defaultValue nil},
-                :onError "default-value",
-                :akvo.lumen.transformation.engine/op "core/to-lowercase"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/to-titlecase"
+                    (validate-cmd {:transformation
+                                   {:args {:columnName "c1", :defaultValue nil},
+                                    :onError "default-value",
+                                    :akvo.lumen.transformation.engine/op "core/to-titlecase"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/to-titlecase"
-(validate-cmd {:transformation
-               {:args {:columnName "c1", :defaultValue nil},
-                :onError "default-value",
-                :akvo.lumen.transformation.engine/op "core/to-titlecase"},
-               :akvo.lumen.transformation/type :transformation})
-
-"core/combine"
-(validate-cmd {:transformation
-               {:args
-                {:columnNames ["c1" "c2"],
-                 :newColumnTitle "combination",
-                 :separator " "},
-                :onError "fail",
-                :akvo.lumen.transformation.engine/op "core/combine"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/combine"
+                    (validate-cmd {:transformation
+                                   {:args
+                                    {:columnNames ["c1" "c2"],
+                                     :newColumnTitle "combination",
+                                     :separator " "},
+                                    :onError "fail",
+                                    :akvo.lumen.transformation.engine/op "core/combine"},
+                                   :akvo.lumen.transformation/type :transformation})
 
 
-"core/derive"
-(validate-cmd {:transformation
-               {:args
-                {:code "row[\"col1bis\"]+\" test \"+row[\"col3\"]",
-                 :newColumnTitle "d3",
-                 :newColumnType "text"},
-                :onError "leave-empty",
-                :akvo.lumen.transformation.engine/op "core/derive"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/derive"
+                    (validate-cmd {:transformation
+                                   {:args
+                                    {:code "row[\"col1bis\"]+\" test \"+row[\"col3\"]",
+                                     :newColumnTitle "d3",
+                                     :newColumnType "text"},
+                                    :onError "leave-empty",
+                                    :akvo.lumen.transformation.engine/op "core/derive"},
+                                   :akvo.lumen.transformation/type :transformation})
 
-"core/generate-geopoints"
-(validate-cmd {:transformation
-               {:args
-                {:ColumnTitleGeo "",
-                 :columnNameLat "c2",
-                 :columnNameLong "c3",
-                 :columnTitleGeo "gp1"},
-                :onError "fail",
-                :akvo.lumen.transformation.engine/op "core/generate-geopoints"},
-               :akvo.lumen.transformation/type :transformation})
+                    "core/generate-geopoints"
+                    (validate-cmd {:transformation
+                                   {:args
+                                    {:ColumnTitleGeo "",
+                                     :columnNameLat "c2",
+                                     :columnNameLong "c3",
+                                     :columnTitleGeo "gp1"},
+                                    :onError "fail",
+                                    :akvo.lumen.transformation.engine/op "core/generate-geopoints"},
+                                   :akvo.lumen.transformation/type :transformation})
+                    "core/merge-datasets"
+                    (validate-cmd {:transformation
+                                   {:args
+                                    {:source
+                                     {:aggregationColumn "c1",
+                                      :aggregationDirection "DESC",
+                                      :datasetId "5b27ca89-221e-4e58-999f-da349713798b",
+                                      :mergeColumn "c1",
+                                      :mergeColumns ["c1"]},
+                                     :target {:mergeColumn "c1"}},
+                                    :akvo.lumen.transformation.engine/op "core/merge-datasets"},
+                                   :akvo.lumen.transformation/type :transformation})]))
 
-(validate-cmd {:transformation
-               {:args
-                {:source
-                 {:aggregationColumn "c1",
-                  :aggregationDirection "DESC",
-                  :datasetId "5b27ca89-221e-4e58-999f-da349713798b",
-                  :mergeColumn "c1",
-                  :mergeColumns ["c1"]},
-                 :target {:mergeColumn "c1"}},
-                :akvo.lumen.transformation.engine/op "core/merge-datasets"},
-               :akvo.lumen.transformation/type :transformation})
+
+(filter (comp false? second) res)
 #+END_SRC
+
+#+RESULTS:
+: In: [:transformation] val: {:args {:source {:aggregationColumn [:v "c1"], :aggregationDirection "DESC", :datasetId "5b27ca89-221e-4e58-999f-da349713798b", :mergeColumn "c1", :mergeColumns ["c1"]}, :target {:mergeColumn "c1"}}, :akvo.lumen.transformation.engine/op "core/merge-datasets"} fails spec: :akvo.lumen.transformation/transformation at: [:transformation :transformation] predicate: valid?
+: (("core/merge-datasets" false))
+
+

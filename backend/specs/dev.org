@@ -70,8 +70,15 @@ Taken from https://github.com/thi-ng/babel/blob/master/src/leiningen/new/thing_b
 (mapc (lambda (file)
             (find-file (expand-file-name file "."))
             (org-babel-tangle)
-            (kill-buffer)) '("db.org" "core.org" "config.org"
-			     "libs.org" "endpoints.org" "transformations.org"
-			     "imports.org" "components.org" "aggregation.org")) 
+            (kill-buffer)) '(
+			     "aggregation.org"
+			     "config.org"
+			     "core.org"
+			     "dataset.org"
+			     "db.org"
+			     "libs.org"
+			     "transformations.org"
+			     "visualisation.org"
+			     )) 
 #+END_SRC
 

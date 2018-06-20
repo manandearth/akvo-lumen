@@ -30,20 +30,23 @@ Following this [[https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ][th
 * visualisation                                               :visualisation:
 
 #+INCLUDE: "visualisation.org"  
-* components                                                     :components:
+
+* TODO components
 Lumen is a Component Oriented System, it uses [[https://github.com/duct-framework/duct][duct framework]] that follows [[https://github.com/stuartsierra/component][component]] library patterns
 Main idea behind component is ~Managed lifecycle of stateful objects in Clojure~ (IoC or DI)
 
-#+INCLUDE: "components.org" 
+;; WIP #+INCLUDE: "components.org" 
 * config                                                             :config:
 Configuration of lumen backend is done through [[https://github.com/akvo/akvo-lumen/blob/specs-lp/backend/resources/akvo/lumen/system.edn#L1][system.edn]]
  #+INCLUDE: "config.org" 
 * db                                                                     :db:
 #+INCLUDE: "db.org" 
-* endpoints                                                       :endpoints:
-#+INCLUDE: "endpoints.org" 
-* imports                                                           :imports:
-#+INCLUDE: "imports.org" 
+* TODO endpoints                                                  :endpoints:
+these endopoints functions should be specified as [[https://clojure.org/guides/spec#_higher_order_functions][HOF]]
+
+;; #+INCLUDE: "endpoints.org" 
+* TODO imports
+;; #+INCLUDE: "imports.org" 
 * libs                                                                 :libs:
 #+INCLUDE: "libs.org" 
 * transformations                                           :transformations:

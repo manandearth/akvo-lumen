@@ -5,7 +5,6 @@
 
 (s/def ::sort ::lumen.s/int-nullable)
 (s/def ::type engine/valid-column-types)
-
 (s/def ::hidden boolean?)
 (s/def ::direction ::lumen.s/string-nullable)
 (s/def ::title string?)

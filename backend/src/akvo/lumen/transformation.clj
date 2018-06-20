@@ -4,6 +4,8 @@
             [akvo.lumen.transformation.engine :as engine]
             [akvo.lumen.util :refer (squuid)]
             [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
+            [clojure.set :refer (rename-keys)]
             [hugsql.core :as hugsql]))
 
 (hugsql/def-db-fns "akvo/lumen/transformation.sql")
@@ -28,7 +30,7 @@
 (defn validate
   [command]
   (try
-    (condp = (:type command)
+    (condp = (::type command)
       :transformation (if (engine/valid? (:transformation command))
                         {:valid? true}
                         {:valid? false
@@ -43,13 +45,14 @@
 (defn apply
   [tenant-conn dataset-id command]
   (if-let [dataset (dataset-by-id tenant-conn {:id dataset-id})]
-    (let [v (validate command)
+    (let [command (update-in command  [:transformation] #(rename-keys % {:op ::engine/op}))
+          v (validate command)
           job-execution-id (str (squuid))]
       (if (:valid? v)
         (try
           (new-transformation-job-execution tenant-conn {:id job-execution-id :dataset-id dataset-id})
           (jdbc/with-db-transaction [tx-conn tenant-conn]
-            (condp = (:type command)
+            (condp = (::type command)
               :transformation (engine/execute-transformation tx-conn dataset-id job-execution-id (:transformation command))
               :undo (engine/execute-undo tx-conn dataset-id job-execution-id)))
           (update-successful-job-execution tenant-conn {:id job-execution-id})

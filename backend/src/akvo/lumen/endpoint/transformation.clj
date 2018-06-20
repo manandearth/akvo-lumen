@@ -1,6 +1,7 @@
 (ns akvo.lumen.endpoint.transformation
   (:require [akvo.lumen.component.tenant-manager :refer [connection]]
             [akvo.lumen.transformation :as t]
+            [clojure.walk :refer (keywordize-keys)]
             [compojure.core :refer :all]))
 
 (defn endpoint [{:keys [tenant-manager]}]
@@ -11,10 +12,10 @@
         (POST "/transform" {:keys [body] :as request}
           (t/apply tenant-conn
                    dataset-id
-                   {:type :transformation
-                    :transformation body}))
+                   {::t/type :transformation
+                    :transformation (keywordize-keys body)}))
 
         (POST "/undo" _
           (t/apply tenant-conn
                    dataset-id
-                   {:type :undo}))))))
+                   {::t/type :undo}))))))

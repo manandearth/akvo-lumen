@@ -18,6 +18,8 @@
 	    [akvo.lumen.specs.libs]
 	    [clojure.spec.alpha :as s]))
 
+  (s/def ::lib.aggregation/visualisation-type #{"pivot" "pie" "donut"})
+
 (s/def ::l.aggregation.filter/filter (s/keys :req-un [::aggregation.query.s/operation
                                                       ::aggregation.query.s/strategy
                                                       ::aggregation.query.s/value
@@ -61,7 +63,7 @@
 
 (s/fdef l.aggregation.utils/find-column
   :args (s/cat :columns ::dataset.s/columns
-               :column-name ::lumen.s/string-nullable)
+	       :column-name ::lumen.s/string-nullable)
   :ret ::dataset.s/column)
 
 (s/def ::l.aggregation.pivot/category-column ::dataset.s/column)

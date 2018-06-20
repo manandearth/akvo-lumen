@@ -8,11 +8,9 @@
 * glossary
   raster graphics https://en.wikipedia.org/wiki/Raster_graphics#Etymology
  
-* visualisation maps domain                                   :visualisation:
+* lib.visualisation contents                                  :visualisation:
 
-  
-
-So what do we currently have in aggregation functionality ...
+Examining visualisation folder ... LOC & path
 
 #+BEGIN_SRC shell :exports results
 wc -l `find ../src/akvo/lumen/lib/visualisation -type f`
@@ -28,13 +26,12 @@ wc -l ../src/akvo/lumen/lib/visualisation.clj
 | ... |                                                      |   | ... |
 |  54 | ../src/akvo/lumen/lib/visualisation.clj              |   |     |
 
-*=> filter , pie, pivot, utils*
 
-besides that we have a main ns ~lib.visualisation~ that just dispatch to maps (with config && metadata in mind)
+... we have a main ns ~lib.visualisation~ that just dispatch to maps (with config && metadata in mind)
 
 
 * visualisation layer legend
-#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer/legend.clj
+#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer/legend.clj :exports code
 (ns akvo.lumen.specs.visualisation.layer.legend
   (:require
 	    [akvo.lumen.specs.core :as lumen.s]
@@ -48,11 +45,8 @@ besides that we have a main ns ~lib.visualisation~ that just dispatch to maps (w
 
 #+END_SRC
 
-#+RESULTS:
-: nil:akvo.lumen.specs.visualisation.layer.legend/title:akvo.lumen.specs.visualisation.layer.legend/visible:akvo.lumen.specs.visualisation.layer.legend/legend
-
 * visualisation layer spec
-#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer/spec.clj
+#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer/spec.clj :exports code
 (ns akvo.lumen.specs.visualisation.layer.spec
   (:require
    [akvo.lumen.specs.core :as lumen.s]
@@ -71,11 +65,8 @@ besides that we have a main ns ~lib.visualisation~ that just dispatch to maps (w
 
 #+END_SRC
 
-#+RESULTS:
-: nil:akvo.lumen.specs.visualisation.layer.spec/version:akvo.lumen.specs.visualisation.layer.spec/baseLayer:akvo.lumen.specs.visualisation.layer.spec/layers:akvo.lumen.specs.visualisation.layer.spec/spec
-
 * visualisation layer
-#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer.clj
+#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/visualisation/layer.clj :exports code
 (ns akvo.lumen.specs.visualisation.layer
   (:require [akvo.lumen.component.tenant-manager :as tenant-manager]
 	    [akvo.lumen.lib :as lib]
@@ -93,13 +84,6 @@ besides that we have a main ns ~lib.visualisation~ that just dispatch to maps (w
 (s/def ::aggregationMethod #{"avg"} ) ;; TODO: check with /Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/specs/aggregation/query.clj::21
 
 (s/def ::popup  coll?)
-
-(def example-filter {:column "c2",
-                     :columnType "number",
-                     :operation "keep",
-                     :origin "filterMenu",
-                     :strategy "isLower",
-                     :value "100000"})
 (s/def ::filters coll?)
 (s/def ::layerType #{"geo-location" "geo-shape" "raster"})
 (s/def ::legend (s/keys :req-un [::layer.legend.s/title ::layer.legend.s/visible])) 
@@ -139,18 +123,13 @@ besides that we have a main ns ~lib.visualisation~ that just dispatch to maps (w
                        :opt-un [::rasterId]))
 #+END_SRC
 
-#+RESULTS:
-: nil#'akvo.lumen.specs.visualisation.layer/data-example:akvo.lumen.specs.visualisation.layer/aggregationMethod:akvo.lumen.specs.visualisation.layer/popup:akvo.lumen.specs.visualisation.layer/filters:akvo.lumen.specs.visualisation.layer/layerType:akvo.lumen.specs.visualisation.layer/legend:akvo.lumen.specs.visualisation.layer/rasterId:akvo.lumen.specs.visualisation.layer/pointSize:akvo.lumen.specs.visualisation.layer/pointColorMapping:akvo.lumen.specs.visualisation.layer/longitude:akvo.lumen.specs.visualisation.layer/latitude:akvo.lumen.specs.visualisation.layer/datasetId:akvo.lumen.specs.visualisation.layer/title:akvo.lumen.specs.visualisation.layer/geom:akvo.lumen.specs.visualisation.layer/pointColorColumn:akvo.lumen.specs.visualisation.layer/visible:akvo.lumen.specs.visualisation.layer/layer
 
 * visualisation ns                                                       :ns:
 
 this [[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/visualisation.clj::8][namespace]] only communicates with hugsql, so intended functionality doesn't return any kind of vis but storing into db some kind of vis data
 
 
- 
-** spec
-
- #+BEGIN_SRC clojure 
+ #+BEGIN_SRC clojure :exports code
  (ns akvo.lumen.specs.visualisation
    (:require [akvo.lumen.lib.visualisation :as lib.visualisation]
 	     [akvo.lumen.lib.visualisation.map-config :as l.visualisation.map-config]
@@ -167,7 +146,8 @@ this [[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/visualis
  (s/def ::lib.visualisation/name string?)
  (s/def ::lib.visualisation/visualisationType
    #{"map" "pivot table" "bar" "line" "area" "pie" "donut" "scatter"})
- (s/def ::lib.visualisation/datasetId ::dataset.s/id)
+ (s/def ::lib.visualisation/datasetId (s/or :v ::dataset.s/id
+					    :n nil?))
 
  (s/def ::lib.visualisation/created ::lumen.s/date-int)
  (s/def ::lib.visualisation/modified ::lumen.s/date-int)
@@ -218,110 +198,9 @@ this [[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/visualis
 
  #+END_SRC
 
- #+RESULTS:
- : nil:akvo.lumen.lib.visualisation/name:akvo.lumen.lib.visualisation/visualisationType:akvo.lumen.lib.visualisation/type:akvo.lumen.lib.visualisation/datasetId:akvo.lumen.lib.visualisation/created:akvo.lumen.lib.visualisation/modified:akvo.lumen.lib.visualisation/status:akvo.lumen.lib.visualisation/id:akvo.lumen.lib.visualisation/layers:akvo.lumen.lib.visualisation/bodyakvo.lumen.lib.visualisation/allakvo.lumen.lib.visualisation/createakvo.lumen.lib.visualisation/upsertakvo.lumen.lib.visualisation/fetchakvo.lumen.lib.visualisation/delete
 
-** sample data 
-
- #+BEGIN_SRC clojure :tangle no
- (in-ns 'akvo.lumen.specs.visualisation)
- (def data {:name "Untitled visualisation",
-	    :visualisationType "map",
-	    :type "visualisation",
-	    :created 1528892610519,
-	    :modified 1528892610519,
-	    :datasetId nil,
-	    :spec
-	    {:version 1,
-	     :baseLayer "street",
-	     :layers
-	     [{:aggregationMethod "avg",
-	       :popup [],
-	       :filters [],
-	       :layerType "geo-location",
-	       :legend {:title nil, :visible true},
-	       :rasterId nil,
-	       :pointSize 3,
-	       :pointColorMapping [],
-	       :longitude nil,
-	       :datasetId "5b210c21-fa20-4f93-a9ba-6ec75c9ce5ae",
-	       :title "jor",
-	       :geom "d1",
-	       :pointColorColumn nil,
-	       :latitude nil,
-	       :visible true}]},
-	    :status "OK",
-	    :id "5b210cc2-6430-4b81-b68a-d89b9d045048"})
-
- (assert (s/valid? ::lib.visualisation/body data))
- #+END_SRC
-
-
-
- #+BEGIN_SRC clojure :tangle no :results value pp
-
-
-
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-{:spec
- {:layer
-  {:aggregationMethod "avg",
-   :popup
-   [:*S4uv-XE.?-FUJ.d!svfJ6+?Z!4w?QT5_OW*M_?df3_F4c.Dzs-?TS*yh7?cF8f+.DzKM4-TSwV+G_C*u-y_._!9L8A-J1U9l?+.++!.E/?2+-70?*?_17??zc14dqy3b-3k_
-    -29/27
-    :-e5Io!*tp*D:Qw:E_27N25F*TlX4*FJI9-*5!:e0*?XI8F_1*VIZ?0+Ord1_9bT:-T5_?+lE_Lp:3H!8_?lA!HL*yJa-FX1_?y5Vg_vZw:QHKX_9+c_X4Qi**e+KU!Q-+?d+3-_:98uX_F2ju7?A7i1oby!522ZJ11?*!:91Mt0fb!2md-Fd8_h-0**q!K:s+-2z6h792?x8:v4!dpM7__p2sc9a_Z*U7+8+d*2c5:pI!J7oo*M6q*!:4bRh2U-nb__3u_0!-!jc5:_2him5bacrw9_YiH*:4!k*w9*_5x!K-!PPNZ*3w+6*:o6qYm-S19-k?YG?*_2Mz60*dNyT+H3:!f-0_W*xX?I1:6*1g:*4*8?E2G_*Y7y7*7!odB*7Qg9H:!761TeY:rXc**e+R?-71?587??3m43dyf4??hfP:_W+yH_h:YxInr19V?74gr3x9*92!h9M*vt??7?:8*3?w63KiY-h-c+Tc5L_r42_cz:0C?MH-!?-B_!*9WQLh:J_AR_0_!_P??zX9?W!6563D!*958-uj:X_iH686ppq8D!SP-HsU3Yu34-RWdpr+:g_6?w:-5a5_81
-    :s-Y-rK_-VL?!_CNb76M8F-0_41!P?5:!+H:zRSVi+x0*j9E?EZlU1CH95+x1*W!-6D:rr8T35tzW+1b*+EM+_?:v+7-a!xi1t4f!!7D-Z5e5?Z-W0+2C:+X*EGP1?s4uBFzY+_!+_9:!-7b1jo_?GSLes9TW!Hl19D!v+Rb?+*:3-!+4:d+Ug6brb!-Fq*mn53ce_w5mri7x+:eJjZE--T6sn!-XA9_++:aQZF*k*3Of*m*jACkR40-_v:+74vl!pEXL_kUL_:bd-4EQ*:*?X_2-C4?*_7+Z++5G:z4L41:m2*a9d-*mv?C**9g8_M4d:Hp0*B5uO!*Bq5T?6c?3Y65B*-1:+S7__hu?6fO08AB4lWDiq:D22y1*0+*dZ5+NaxO120a!k!Y0oS_?+:5i6Ikp?-NDox:wx6*lVs*Jt!V4s+x*:YCs-7w4+r4bk0*QhSsReaG3*f_-b:SD-kTZ9a8-!q:9:*Sm4G7aO16ILh0?C8cJ:_s__z:2:G+!4_*Q:+Vr1?*!+*8z+x!O4vB1_:cg9w?6_Zi4k?5-p4-
-    #uuid "08d63881-786a-4011-9b40-681310498e09"],
-   :filters
-   (\D
-    #uuid "8ec3d450-aaab-4d30-a751-60e19b7fa7c3"
-    9/8
-    true
-    20/7
-    O0RvC35
-    false
-    oe.X_1H?5--542J6Bg0G4.D!2_Mo!YpC?!K8x-TN55*9.W3rO35Q!!Do*w?_+8-_!.D6m+_-7P.Wtb8*J6q-N_g*ln!K!*20.f+5*__5+__7B.Q7/*07n.
-    -32.0
-    ,*rZ7T?U0u9-.Jt718*+ycN+26oe_-1Xp.I7CE!!cc?n-gg80*.!!?U.vzL1_h*E++Ir!.p620-9_rDsj!!RpV.+-aICSDJ-W-+-ABAqHklh!a8f!.iRo_q??5K67?Bw9*7jSQh_k?k-bSdx6.yJqJrzMuae9v!!+S7g2!W1.CNbu*WkM8!YOT4M_HOJ154go.y--!sXD97m02k6.jS!X50rvp*h+q!okwl.M!+2g!_pTsh39-*6!4yUf.q*-a5Fv*JRg++?z+1B6/*5?p
-    4
-    -0.9995212554931641
-    -3.6495819091796875
-    -8
-    0.007313174690352753
-    "1\")q<3${o|E~O"
-    true
-    6213369),
-   :layerType "geo-location",
-   :legend {:title "GPrAxMHK0ozE4RlO4S2J84", :visible true},
-   :rasterId #uuid "a3e3b73d-bfc4-4756-a00e-90aede93a515",
-   :pointSize 0,
-   :pointColorMapping
-   [#uuid "8911f740-aacb-4c88-8dff-8991f7dbb20f"
-    #uuid "c91746fc-2d96-4585-9949-0d26e608a54b"
-    9/29
-    Y0*i1-9],
-   :longitude {},
-   :datasetId #uuid "dd130b00-eacf-4989-badb-6b48b4978a19",
-   :title "LGSSncNf5r",
-   :geom "b89854H",
-   :pointColorColumn nil,
-   :latitude {},
-   :visible true},
-  :version 684,
-  :baseLayer "h"},
- :name "",
- :type "5uWx737inZjGJ66NO1",
- :visualisationType "map",
- :created -4,
- :modified 130,
- :datasetId nil,
- :status "OK",
- :id #uuid "ff6b361a-5170-40d8-9f08-0e32603720f8"}
-#+end_example
-
+ 
+ 
 
 
  

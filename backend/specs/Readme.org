@@ -12,51 +12,47 @@ The tools used for using *LP* are [[https://www.gnu.org/software/emacs/][Emacs]]
 
 Following you'll find the main topics covered in lumen
 
-** specs
+* core
+#+INCLUDE: "core.org"
 
-*** TODO core
-    Here common utilities for defining lumen specs
-  - [ ] think about having generator in ~prod~ side ... ~sample~ functionality
-    #+INCLUDE: "core.org"
-  - [ ] testing ~:ret~ https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ is not possible (using raw clojure.spec)
-    - https://github.com/jeaye/orchestra option to test ~:ret~
+**** TODO think about having generator dep in ~prod~ side ... to get ~sample~ data functionality
+     ~[org.clojure/test.check "0.9.0" :scope "test"]~
+**** DONE testing ~:ret~ 
+     CLOSED: [2018-06-20 Wed 16:46]
+Following this [[https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ][thread]] is not possible (using plain clojure.spec lib) but there is other option to test it https://github.com/jeaye/orchestra 
 
-** aggregation                                                  :aggregation:
 
- #+INCLUDE: "aggregation.org"  
-** visualisation                                              :visualisation:
 
- #+INCLUDE: "visualisation.org"  
-** components                                                    :components:
+
+* aggregation                                                   :aggregation:
+
+#+INCLUDE: "aggregation.org"  
+* visualisation                                               :visualisation:
+
+#+INCLUDE: "visualisation.org"  
+* components                                                     :components:
 Lumen is a Component Oriented System, it uses [[https://github.com/duct-framework/duct][duct framework]] that follows [[https://github.com/stuartsierra/component][component]] library patterns
 Main idea behind component is ~Managed lifecycle of stateful objects in Clojure~ (IoC or DI)
 
 #+INCLUDE: "components.org" 
-** config                                                            :config:
+* config                                                             :config:
 Configuration of lumen backend is done through [[https://github.com/akvo/akvo-lumen/blob/specs-lp/backend/resources/akvo/lumen/system.edn#L1][system.edn]]
  #+INCLUDE: "config.org" 
-** db                                                                    :db:
+* db                                                                     :db:
 #+INCLUDE: "db.org" 
-** endpoints                                                      :endpoints:
- #+INCLUDE: "endpoints.org" 
-** imports                                                          :imports:
- #+INCLUDE: "imports.org" 
-** libs                                                                :libs:
- #+INCLUDE: "libs.org" 
-** transformations                                          :transformations:
- #+INCLUDE: "transformations.org" 
+* endpoints                                                       :endpoints:
+#+INCLUDE: "endpoints.org" 
+* imports                                                           :imports:
+#+INCLUDE: "imports.org" 
+* libs                                                                 :libs:
+#+INCLUDE: "libs.org" 
+* transformations                                           :transformations:
+#+INCLUDE: "transformations.org" 
 
 * TODO specs problems to confront with  
 
-- [ ] how to naming alias pivot.row.s ... so far i've 2 kinds of nss specs ones and normal ones 
-specs ones ends in ~.s~ 
-
-the other problem to think about is how long this alias should be ... and which pattern to apply when we need to reduce naming
-
-** TODO sort maps and connect to CIDER
-https://github.com/bluekezza/clj-stable-pprint
-
-** TODO visual diff of clojure data
+- [ ] [[https://github.com/akvo/akvo-lumen/issues/1441#issuecomment-398687412][how to naming schemas ns and aliases]]
+- [ ] the other problem to think about is how long this alias should be ... and which pattern to apply when we need to reduce naming
 
 
 * tools                                                               :index:
@@ -64,8 +60,3 @@ https://github.com/bluekezza/clj-stable-pprint
 ** dev
 #+INCLUDE: "dev.org"
 
-
-* learning LP
-
-** tagging by domain, keep generic/abstract 
-so instead of tag ~tenant_manager~ use ~db~

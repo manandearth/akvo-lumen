@@ -1,6 +1,7 @@
 (ns akvo.lumen.specs.core
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [clojure.tools.logging :as log]
             [akvo.lumen.util :refer (squuid)])
   (:import javax.sql.DataSource))
 
@@ -28,14 +29,14 @@
   (when (some? v)
     (try
       (int? (read-string v))
-      (catch Exception e (println (format  "cant parse %s as int" v))))))
+      (catch Exception e (log/debug (format  "trying to parse string as int ...cant parse %s as int" v))))))
 
 (s/def ::str-int
   (s/with-gen
     str-int?
     #(s/gen (set (map str (repeatedly 100 (partial rand-int 100)))))))
 
-(s/def ::date-int int?) ;; TODO: improve it
+(s/def ::date-int int?) ;; TODO: improve it 
 
 (s/def ::string-nullable (s/or :s string? :n nil?))
 

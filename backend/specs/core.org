@@ -15,6 +15,7 @@ also included a function ~sample~ to generate sample data having a spec
 (ns akvo.lumen.specs.core
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [clojure.tools.logging :as log]
             [akvo.lumen.util :refer (squuid)])
   (:import javax.sql.DataSource))
 
@@ -42,7 +43,7 @@ also included a function ~sample~ to generate sample data having a spec
   (when (some? v)
     (try
       (int? (read-string v))
-      (catch Exception e (println (format  "cant parse %s as int" v))))))
+      (catch Exception e (log/debug (format  "trying to parse string as int ...cant parse %s as int" v))))))
 
 (s/def ::str-int
   (s/with-gen

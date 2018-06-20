@@ -14,7 +14,8 @@
 (s/def ::lib.visualisation/name string?)
 (s/def ::lib.visualisation/visualisationType
   #{"map" "pivot table" "bar" "line" "area" "pie" "donut" "scatter"})
-(s/def ::lib.visualisation/datasetId ::dataset.s/id)
+(s/def ::lib.visualisation/datasetId (s/or :v ::dataset.s/id
+					   :n nil?))
 
 (s/def ::lib.visualisation/created ::lumen.s/date-int)
 (s/def ::lib.visualisation/modified ::lumen.s/date-int)

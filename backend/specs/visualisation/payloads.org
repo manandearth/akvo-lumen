@@ -1,13 +1,9 @@
-* visualisation                                               :visualisation:
-#+BEGIN_SRC clojure :tangle no :session spec
-(remove-ns 'my.data.vis)
-(ns my.data.vis
-  (:require [clojure.data :refer (diff)]
-            [akvo.lumen.lib.visualisation :as lib.visualisation]
-            [akvo.lumen.specs.visualisation]
-            [akvo.lumen.specs.visualisation.layer]
-            [akvo.lumen.specs.core :as lumen.s]
-            [clojure.spec.alpha :as s]))
+* data sample and vis payloads                                :visualisation:
+
+#+BEGIN_SRC clojure :tangle no :results silent :exports code
+(in-ns 'akvo.lumen.specs.visualisation)
+
+(require '[clojure.data :refer (diff)])
 ;; vis data samples
 
 (defn d* [a b]
@@ -484,19 +480,15 @@
 ;;           :value "78"}]}]}}]
 #+END_SRC
 
-#+RESULTS:
+#+BEGIN_SRC clojure :tangle no :exports code :results silent
+(in-ns 'akvo.lumen.specs.visualisation)
+(require '[clojure.data :refer (diff)]
 
-
-#+BEGIN_SRC clojure :tangle no :session spec
-(remove-ns 'my.data.transformation) 
-(ns my.data.transformation
-  (:require [clojure.data :refer (diff)]
-            [akvo.lumen.specs.core :as lumen.s]
-            [akvo.lumen.transformation :as transformation]
-            [akvo.lumen.transformation.engine :as transformation.engine]
-            [clojure.walk :refer (keywordize-keys)]
-            [clojure.spec.alpha :as s]
-            [akvo.lumen.specs.transformations]))
+         '[akvo.lumen.transformation :as transformation]
+         '[akvo.lumen.transformation.engine :as transformation.engine]
+         '[clojure.walk :refer (keywordize-keys)]
+         '[clojure.spec.alpha :as s]
+         '[akvo.lumen.specs.transformations])
 
 (defn d* [a b]
   (butlast (diff a b)))
@@ -518,10 +510,10 @@
           :columnNameLong "c3",
           :columnTitleGeo "asdasd"},
          :onError "fail",
-         :op "core/generate-geopoints"},
-        :type :transformation})
+         :akvo.lumen.transformation.engine/op "core/generate-geopoints"},
+         :akvo.lumen.transformation/type :transformation})
 
-::transformation.engine/op-spec
+
 (transformation.engine/valid? (:transformation a))
 
 (c* ::transformation.engine/op-spec (:transformation a))
@@ -534,7 +526,7 @@
 ;;       "columnTitleGeo" "asdasd"},
 ;;      "onError" "fail",
 ;;      "op" "core/generate-geopoints"},
-;;     :type :transformation}
+;;     :akvo.lumen.transformation/type :transformation}
 
 
 
@@ -543,8 +535,8 @@
         {:args
          {:columnNames ["c1" "c1"], :newColumnTitle "yupie", :separator ","},
          :onError "fail",
-         :op "core/combine"},
-        :type :transformation})
+         :akvo.lumen.transformation.engine/op "core/combine"},
+        :akvo.lumen.transformation/type :transformation})
 
 (c* ::transformation/command b)
 ;; => {:transformation
@@ -554,8 +546,43 @@
 ;;       "separator" ","},
 ;;      "onError" "fail",
 ;;      "op" "core/combine"},
-;;     :type :transformation}
+;;     :akvo.lumen.transformation/type :transformation}
 #+END_SRC
 
-#+RESULTS:
-: #namespace[my.data.transformation]nil#'my.data.transformation/d*#'my.data.transformation/c*#'my.data.transformation/a{:transformation {"args" {"ColumnTitleGeo" "", "columnNameLat" "c2", "columnNameLong" "c3", "columnTitleGeo" "asdasd"}, "onError" "fail", "op" "core/generate-geopoints"}, :type :transformation}
+#+BEGIN_SRC clojure :tangle no :results value pp replace :exports both
+(in-ns 'akvo.lumen.specs.visualisation)
+(def data {:name "Untitled visualisation",
+	   :visualisationType "map",
+	   :type "visualisation",
+	   :created 1528892610519,
+	   :modified 1528892610519,
+	   :datasetId nil,
+	   :spec
+	   {:version 1,
+	    :baseLayer "street",
+	    :layers
+	    [{:aggregationMethod "avg",
+	      :popup [],
+	      :filters [],
+	      :layerType "geo-location",
+	      :legend {:title nil, :visible true},
+	      :rasterId nil,
+	      :pointSize 3,
+	      :pointColorMapping [],
+	      :longitude nil,
+	      :datasetId "5b210c21-fa20-4f93-a9ba-6ec75c9ce5ae",
+	      :title "jor",
+	      :geom "d1",
+	      :pointColorColumn nil,
+	      :latitude nil,
+	      :visible true}]},
+	   :status "OK",
+	   :id "5b210cc2-6430-4b81-b68a-d89b9d045048"})
+
+(s/valid? ::lib.visualisation/body data)
+ #+END_SRC
+
+ #+RESULTS:
+ : 16:08:35.793 [nREPL-worker-37] WARN  akvo.lumen.specs.core - "trying to parse string as int ...cant parse 3 as int"
+ : 
+ : true

@@ -5,9 +5,9 @@
 #+PROPERTY: header-args:clojure+ :mkdirp yes
 #+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/aggregation.clj
 
-* aggregation domain                                            :aggregation:
+* lib.aggregation contents                                      :aggregation:
 
-So what do we currently have in aggregation functionality ...
+what do we currently have in aggregation functionality?? (LOC and path)...
 
 #+BEGIN_SRC shell :exports results
 wc -l `find ../src/akvo/lumen/lib/aggregation -type f`
@@ -24,23 +24,10 @@ wc -l ../src/akvo/lumen/lib/aggregation.clj
 | ... |                                              |   | ... |
 |  40 | ../src/akvo/lumen/lib/aggregation.clj        |   |     |
 
-*=> filter , pie, pivot, utils*
-
-besides that we have a main ns ~lib.aggregation~ that just dispatch to pie or pivot nss
+So far, 4 namespaces filter, pie, pivot, utils and a main ns ~lib.aggregation~ that just dispatch to pie or pivot nss. Worth noting that utils namespace only contains 10LOC
 
 
-#+BEGIN_QUOTE
-A,B
-a1,b1
-a1,b1
-a1,b1
-a1,b2
-a2,b1
-a2,b1
-a2,b2
-a2,b2
-#+END_QUOTE
-* aggregation.spec ns                                                    :ns:
+* lib.aggregation specs 
 
 #+BEGIN_SRC clojure 
 (ns akvo.lumen.specs.aggregation
@@ -59,236 +46,217 @@ a2,b2
 	    [akvo.lumen.specs.db :as db.s]
 	    [akvo.lumen.specs.libs]
 	    [clojure.spec.alpha :as s]))
+
+  (s/def ::lib.aggregation/visualisation-type #{"pivot" "pie" "donut"})
 #+END_SRC
-* filter specs
-#+BEGIN_SRC clojure
+** filter
+ #+BEGIN_SRC clojure
 
 
-(s/def ::l.aggregation.filter/filter (s/keys :req-un [::aggregation.query.s/operation
-                                                      ::aggregation.query.s/strategy
-                                                      ::aggregation.query.s/value
-                                                      ::dataset.s/column]))
+ (s/def ::l.aggregation.filter/filter (s/keys :req-un [::aggregation.query.s/operation
+                                                       ::aggregation.query.s/strategy
+                                                       ::aggregation.query.s/value
+                                                       ::dataset.s/column]))
 
 
-(s/def ::l.aggregation.filter/categoryColumn ::dataset.s/column)
-(s/def ::l.aggregation.filter/rowColumn ::dataset.s/column)
-(s/def ::l.aggregation.filter/valueColumn ::dataset.s/column)
-(s/def ::l.aggregation.filter/aggregation string?)
+ (s/def ::l.aggregation.filter/categoryColumn ::dataset.s/column)
+ (s/def ::l.aggregation.filter/rowColumn ::dataset.s/column)
+ (s/def ::l.aggregation.filter/valueColumn ::dataset.s/column)
+ (s/def ::l.aggregation.filter/aggregation string?)
 
-(s/def ::l.aggregation.filter/filters (s/coll-of ::l.aggregation.filter/filter :gen-max 3))
+ (s/def ::l.aggregation.filter/filters (s/coll-of ::l.aggregation.filter/filter :gen-max 3))
 
-(s/fdef l.aggregation.filter/sql-str
-  :args (s/cat
-         :columns ::dataset.s/columns
-	 :filters ::aggregation.query.s/filters)
-  :ret string?)
+ (s/fdef l.aggregation.filter/sql-str
+   :args (s/cat
+          :columns ::dataset.s/columns
+	  :filters ::aggregation.query.s/filters)
+   :ret string?)
 
-(s/fdef l.aggregation.filter/find-column
-  :args (s/cat
-         :columns ::dataset.s/columns
-	 :column-name string?)
-  :ret ::dataset.s/column)
+ (s/fdef l.aggregation.filter/find-column
+   :args (s/cat
+          :columns ::dataset.s/columns
+	  :column-name string?)
+   :ret ::dataset.s/column)
 
-(s/fdef l.aggregation.filter/filter-sql
-  :args (s/cat
-         :filter ::l.aggregation.filter/filter)
-  :ret string?)
-
-
-(s/def ::l.aggregation.filter/comparison-op #{">" "<="})
-
-(s/fdef l.aggregation.filter/comparison
-  :args (s/cat
-         :op ::l.aggregation.filter/comparison-op
-         :column-type ::dataset.column.s/type
-         :column-name ::dataset.column.s/columnName
-         :value ::aggregation.query.s/value)
-  :ret string?)
-#+END_SRC
-* aggregation.query 
-#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/aggregation/query.clj
-(ns akvo.lumen.specs.aggregation.query
-  (:require [akvo.lumen.specs.core :as lumen.s]
-            [clojure.spec.alpha :as s]))
-
-(s/def ::operation #{"keep"  "remove"})
-
-(s/def ::strategy #{"isHigher" "isLower" "is" "isEmpty"})
-
-(s/def ::value ::lumen.s/string-nullable)
-
-(s/def ::column string?)
-
-(s/def ::filter (s/keys :req-un [::operation
-                                 ::strategy
-                                 ::value
-                                 ::column]))
-
-(s/def ::filters (s/or :col (s/coll-of ::filter :gen-max 3)
-		       :nil nil?))
-
-(s/def ::aggregation #{"mean" "sum" "min" "max" "count"})
-
-(s/def ::categoryColumn (s/or :c ::column :n nil?))
-(s/def ::rowColumn (s/or :c ::column :n nil?))
-(s/def ::valueColumn (s/or :c ::column :n nil?))
-#+END_SRC
-
-* a.pivot.row.s
-#+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/aggregation/pivot/row.clj
-(ns akvo.lumen.specs.aggregation.pivot.row
-  (:require [akvo.lumen.specs.core :as lumen.s]
-            [clojure.spec.alpha :as s]))
-
-(s/def ::type string?)
-
-(s/def ::title string?)
-
-#+END_SRC
-
-* utils
-#+BEGIN_SRC clojure
-(s/fdef l.aggregation.utils/find-column
-  :args (s/cat :columns ::dataset.s/columns
-               :column-name ::lumen.s/string-nullable)
-  :ret ::dataset.s/column)
-
-#+END_SRC
-
-* pivot                                   
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/aggregation/pivot.clj::1][pivot-ns]]
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/akvo/lumen/lib/pivot_test.clj::1][getting into pivot using tests]]
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/resources/pivot.csv::1][data-pivot-tests]]
-   
-#+BEGIN_SRC clojure
-(s/def ::l.aggregation.pivot/category-column ::dataset.s/column)
-(s/def ::l.aggregation.pivot/row-column ::dataset.s/column)
-(s/def ::l.aggregation.pivot/value-column ::dataset.s/column)
-(s/def ::l.aggregation.pivot/aggregation #{"avg" "sum" "min" "max" "count"})
-
-(s/def ::l.aggregation.pivot/query
-  (s/keys :req-un [::aggregation.query.s/aggregation]
-	  :opt-un [::aggregation.query.s/filters
-		   ::aggregation.query.s/categoryColumn
-		   ::aggregation.query.s/rowColumn
-		   ::aggregation.query.s/valueColumn]))
-
-(s/def ::l.aggregation.pivot/query-built
-  (s/keys :req-un [::l.aggregation.pivot/aggregation]
-          :opt-un [::l.aggregation.pivot/category-column
-                   ::aggregation.query.s/filters
-                   ::l.aggregation.pivot/row-column
-                   ::l.aggregation.pivot/value-column]))
-
-(s/fdef l.aggregation.pivot/build-query
-  :args (s/cat
-	 :columns ::dataset.s/columns
-	 :query ::l.aggregation.pivot/query)
-  :ret ::l.aggregation.pivot/query-built)
+ (s/fdef l.aggregation.filter/filter-sql
+   :args (s/cat
+          :filter ::l.aggregation.filter/filter)
+   :ret string?)
 
 
-(s/def ::l.aggregation.pivot/row (s/keys :req-un [::a.pivot.row.s/type ::a.pivot.row.s/title]))
+ (s/def ::l.aggregation.filter/comparison-op #{">" "<="})
 
-(s/def ::l.aggregation.pivot/rows (s/coll-of ::l.aggregation.pivot/row :gen-max 3))
+ (s/fdef l.aggregation.filter/comparison
+   :args (s/cat
+          :op ::l.aggregation.filter/comparison-op
+          :column-type ::dataset.column.s/type
+          :column-name ::dataset.column.s/columnName
+          :value ::aggregation.query.s/value)
+   :ret string?)
+ #+END_SRC
+** query 
+ #+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/aggregation/query.clj
+ (ns akvo.lumen.specs.aggregation.query
+   (:require [akvo.lumen.specs.core :as lumen.s]
+             [clojure.spec.alpha :as s]))
 
-(s/def ::l.aggregation.pivot/columns pos-int?)
+ (s/def ::operation #{"keep"  "remove"})
 
-(s/def ::l.aggregation.pivot/apply-query-ret
-  (s/keys :req-un [::l.aggregation.pivot/rows
-                   ::l.aggregation.pivot/columns]))
+ (s/def ::strategy #{"isHigher" "isLower" "is" "isEmpty"})
 
-(s/fdef l.aggregation.pivot/apply-query
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :query ::l.aggregation.pivot/query-built
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::value ::lumen.s/string-nullable)
 
-(s/fdef l.aggregation.pivot/apply-pivot
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :query ::l.aggregation.pivot/query-built
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::column string?)
 
-(s/fdef l.aggregation.pivot/apply-empty-query
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::filter (s/keys :req-un [::operation
+                                  ::strategy
+                                  ::value
+                                  ::column]))
 
-(s/fdef l.aggregation.pivot/apply-empty-category-query
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :query ::l.aggregation.pivot/query-built
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::filters (s/or :col (s/coll-of ::filter :gen-max 3)
+			:nil nil?))
 
-(s/fdef l.aggregation.pivot/apply-empty-row-query
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :query ::l.aggregation.pivot/query-built
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::aggregation #{"mean" "sum" "min" "max" "count"})
 
-(s/fdef l.aggregation.pivot/apply-empty-value-query
-  :args (s/cat
-         :conn ::db.s/tenant-connection
-         :dataset ::dataset.s/dataset
-         :query ::l.aggregation.pivot/query-built
-         :filter-str string?)
-  :ret ::l.aggregation.pivot/apply-query-ret)
+ (s/def ::categoryColumn (s/or :c ::column :n nil?))
+ (s/def ::rowColumn (s/or :c ::column :n nil?))
+ (s/def ::valueColumn (s/or :c ::column :n nil?))
+ #+END_SRC
+** utils
+ #+BEGIN_SRC clojure
+ (s/fdef l.aggregation.utils/find-column
+   :args (s/cat :columns ::dataset.s/columns
+		:column-name ::lumen.s/string-nullable)
+   :ret ::dataset.s/column)
 
-
-
-
-
-
-
-#+END_SRC
-
-* pie                                         
-
-
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/akvo/lumen/lib/pie_test.clj::1][getting into pie using tests]]
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/resources/pie.csv::1][data-pie-tests]] 
-
-#+BEGIN_SRC clojure
-(s/def ::l.aggregation.pie/bucketColumn ::aggregation.query.s/column)
-(s/def ::l.aggregation.pie/query (s/keys :req-un [::l.aggregation.pie/bucketColumn]
-				       :opt-un [::aggregation.query.s/filters]))
-#+END_SRC
-
-
-
-
-* endpoint                                    
-	  
-Once that endpoint is initialised in system/start, it receives 
-
-~"/api/aggregation"~ ~{:keys [tenant query-params] :as request}~
-
-also in the url we expect following params
-
-~"/:dataset-id/:visualisation-type"~
-
- #+BEGIN_SRC clojure :tangle no
- (require '[akvo.lumen.endpoint.aggregation :as e.aggregation])
-
-
- (s/fdef e.aggregation/endpoint
-     :args (s/keys :req-un [::tenant-manager/tenant-manager])
-     :ret ::lib/response)
  #+END_SRC
 
-* lib                                            
+** pivot                                   
+ [[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/aggregation/pivot.clj::1][pivot-ns]]
+ [[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/akvo/lumen/lib/pivot_test.clj::1][getting into pivot using tests]]
+ [[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/resources/pivot.csv::1][data-pivot-tests]]
+   
+ #+BEGIN_SRC clojure
+ (s/def ::l.aggregation.pivot/category-column ::dataset.s/column)
+ (s/def ::l.aggregation.pivot/row-column ::dataset.s/column)
+ (s/def ::l.aggregation.pivot/value-column ::dataset.s/column)
+ (s/def ::l.aggregation.pivot/aggregation #{"avg" "sum" "min" "max" "count"})
+
+ (s/def ::l.aggregation.pivot/query
+   (s/keys :req-un [::aggregation.query.s/aggregation]
+	   :opt-un [::aggregation.query.s/filters
+		    ::aggregation.query.s/categoryColumn
+		    ::aggregation.query.s/rowColumn
+		    ::aggregation.query.s/valueColumn]))
+
+ (s/def ::l.aggregation.pivot/query-built
+   (s/keys :req-un [::l.aggregation.pivot/aggregation]
+           :opt-un [::l.aggregation.pivot/category-column
+                    ::aggregation.query.s/filters
+                    ::l.aggregation.pivot/row-column
+                    ::l.aggregation.pivot/value-column]))
+
+ (s/fdef l.aggregation.pivot/build-query
+   :args (s/cat
+	  :columns ::dataset.s/columns
+	  :query ::l.aggregation.pivot/query)
+   :ret ::l.aggregation.pivot/query-built)
+
+
+ (s/def ::l.aggregation.pivot/row (s/keys :req-un [::a.pivot.row.s/type ::a.pivot.row.s/title]))
+
+ (s/def ::l.aggregation.pivot/rows (s/coll-of ::l.aggregation.pivot/row :gen-max 3))
+
+ (s/def ::l.aggregation.pivot/columns pos-int?)
+
+ (s/def ::l.aggregation.pivot/apply-query-ret
+   (s/keys :req-un [::l.aggregation.pivot/rows
+                    ::l.aggregation.pivot/columns]))
+
+ (s/fdef l.aggregation.pivot/apply-query
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :query ::l.aggregation.pivot/query-built
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+ (s/fdef l.aggregation.pivot/apply-pivot
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :query ::l.aggregation.pivot/query-built
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+ (s/fdef l.aggregation.pivot/apply-empty-query
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+ (s/fdef l.aggregation.pivot/apply-empty-category-query
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :query ::l.aggregation.pivot/query-built
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+ (s/fdef l.aggregation.pivot/apply-empty-row-query
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :query ::l.aggregation.pivot/query-built
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+ (s/fdef l.aggregation.pivot/apply-empty-value-query
+   :args (s/cat
+          :conn ::db.s/tenant-connection
+          :dataset ::dataset.s/dataset
+          :query ::l.aggregation.pivot/query-built
+          :filter-str string?)
+   :ret ::l.aggregation.pivot/apply-query-ret)
+
+
+
+
+
+
+
+ #+END_SRC
+
+*** a.pivot.row.s
+  #+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/aggregation/pivot/row.clj
+  (ns akvo.lumen.specs.aggregation.pivot.row
+    (:require [akvo.lumen.specs.core :as lumen.s]
+              [clojure.spec.alpha :as s]))
+
+  (s/def ::type string?)
+
+  (s/def ::title string?)
+
+  #+END_SRC
+
+** pie                                         
+
+
+ [[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/akvo/lumen/lib/pie_test.clj::1][getting into pie using tests]]
+ [[/Users/tangrammer/git/akvo/akvo-lumen/backend/test/resources/pie.csv::1][data-pie-tests]] 
+
+ #+BEGIN_SRC clojure
+ (s/def ::l.aggregation.pie/bucketColumn ::aggregation.query.s/column)
+ (s/def ::l.aggregation.pie/query (s/keys :req-un [::l.aggregation.pie/bucketColumn]
+					:opt-un [::aggregation.query.s/filters]))
+ #+END_SRC
+
+** lib.aggregation funs spec(ed)
+
+
   #+BEGIN_SRC clojure
-  (s/def ::lib.aggregation/visualisation-type #{"pivot" "pie" "donut"})
+
 
   (defmulti query-type ::lib.aggregation/visualisation-type)
 
@@ -334,107 +302,69 @@ also in the url we expect following params
     :ret ::lib/response)
   #+END_SRC
 
-* testing                                                             :tests:
+* testing specs                                                       :tests:
 
-**** s/multi-spec
-     dispathing specs based in data props, in this case using ~:visualisation-type~
+*s/multi-spec* dispathing specs based in data props, in this case using ~:visualisation-type~
 
-  #+BEGIN_SRC clojure :tangle no :results value replace :exports code
+  #+BEGIN_SRC clojure :tangle no :results pp value replace :exports both
+  (in-ns 'akvo.lumen.specs.aggregation)
+
   [(s/valid? (s/multi-spec query-type ::lib.aggregation/visualisation-type)
-	    {::db.s/tenant-connection (lumen.s/sample ::db.s/tenant-connection)
-	     ::db.s/dataset (lumen.s/sample ::db.s/dataset)
-	     ::lib.aggregation/visualisation-type "pie"
-	     :query (lumen.s/sample ::l.aggregation.pie/query)})
+	     {::db.s/tenant-connection (lumen.s/sample ::db.s/tenant-connection)
+	      ::dataset.s/dataset (lumen.s/sample ::dataset.s/dataset)
+	      ::lib.aggregation/visualisation-type "pie"
+	      :query (lumen.s/sample ::l.aggregation.pie/query)})
 
-  (s/valid? (s/multi-spec query-type ::lib.aggregation/visualisation-type)
-	    {::db.s/tenant-connection (lumen.s/sample ::db.s/tenant-connection)
-	     ::db.s/dataset (lumen.s/sample ::db.s/dataset)
-	     ::lib.aggregation/visualisation-type "pivot"
-	     :query (lumen.s/sample ::l.aggregation.pivot/query)})]
+   (s/valid? (s/multi-spec query-type ::lib.aggregation/visualisation-type)
+	     {::db.s/tenant-connection (lumen.s/sample ::db.s/tenant-connection)
+	      ::dataset.s/dataset (lumen.s/sample ::dataset.s/dataset)
+	      ::lib.aggregation/visualisation-type "pivot"
+	      :query (lumen.s/sample ::l.aggregation.pivot/query)})
 
-
-  (s/explain (s/multi-spec query-type ::lib.aggregation/visualisation-type)
-	    {:akvo.lumen.specs.db/tenant-connection
-	     (lumen.s/sample ::db.s/tenant-connection),
-	     :akvo.lumen.specs.db/dataset
-	     {:table-name "ds_b1b3d3bc_771b_4ff7_af80_dc9b6b59921f",
-	      :title "pivot",
-	      :created 1528449334810,
-	      :modified 1528449334810,
-	      :id "5b1a4936-7ffd-4f59-9483-f2735d39fb0e",
-	      :updated 1528449334825,
-	      :columns
-	      ({"sort" nil,
-		"type" "text",
-		"title" "A",
-		"hidden" false,
-		"direction" nil,
-		"columnName" "c1"}
-	       {"sort" nil,
-		"type" "text",
-		"title" "B",
-		"hidden" false,
-		"direction" nil,
-		"columnName" "c2"}
-	       {"sort" nil,
-		"type" "number",
-		"title" "C",
-		"hidden" false,
-		"direction" nil,
-		"columnName" "c3"}),
-	      :transformations ()},
-	     :akvo.lumen.lib.aggregation/visualisation-type "pivot",
-	     :query {:aggregation "count"}}
-	    )
+   (s/valid? (s/multi-spec query-type ::lib.aggregation/visualisation-type)
+	     {:akvo.lumen.specs.db/tenant-connection
+	      (lumen.s/sample ::db.s/tenant-connection),
+	      ::dataset.s/dataset
+	      {:table-name "ds_b1b3d3bc_771b_4ff7_af80_dc9b6b59921f",
+	       :title "pivot",
+	       :created 1528449334810,
+	       :modified 1528449334810,
+	       :id "5b1a4936-7ffd-4f59-9483-f2735d39fb0e",
+	       :updated 1528449334825,
+	       :columns
+	       ({"sort" nil,
+		 "type" "text",
+		 "title" "A",
+		 "hidden" false,
+		 "direction" nil,
+		 "columnName" "c1"}
+		{"sort" nil,
+		 "type" "text",
+		 "title" "B",
+		 "hidden" false,
+		 "direction" nil,
+		 "columnName" "c2"}
+		{"sort" nil,
+		 "type" "number",
+		 "title" "C",
+		 "hidden" false,
+		 "direction" nil,
+		 "columnName" "c3"}),
+	       :transformations ()},
+	      :akvo.lumen.lib.aggregation/visualisation-type "pivot",
+	      :query {:aggregation "count"}}
+	     )]
   #+END_SRC
 
   #+RESULTS:
-  | true | true |
+  : [true true true]
 
-
-** dataset                                                           :sample:
- #+BEGIN_SRC clojure :tangle no
- {:table-name "ds_c5e5dc80_151e_48ff_a4ca_05bb8d74aa7d",
-  :title "pivot",
-  :created 1528454476862,
-  :modified 1528454476862,
-  :id "5b1a5d4c-5c16-495a-a962-062a2df977fd",
-  :updated 1528454476876,
-  :columns
-  ({"sort" nil,
-    "type" "text",
-    "title" "A",
-    "hidden" false,
-    "direction" nil,
-    "columnName" "c1"}
-   {"sort" nil,
-    "type" "text",
-    "title" "B",
-    "hidden" false,
-    "direction" nil,
-    "columnName" "c2"}
-   {"sort" nil,
-    "type" "number",
-    "title" "C",
-    "hidden" false,
-    "direction" nil,
-    "columnName" "c3"}),
-  :transformations ()}
-
-
- #+END_SRC
-
-
-* TODO RENAME type to column-type and columnName to column-name
-[[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/aggregation/filter.clj][aggregation/filter.clj]]
-
-
-* database ... tenant aggregation tables                                :sql:
- #+BEGIN_SRC sql :exports both :database lumen_tenant_1 :engine postgresql  :dbhost localhost :dbport 5432  :dbuser lumen :dbpassword password
+* database: tenant aggregation tables                                   :sql:
+ #+BEGIN_SRC sql :exports both :database lumen_tenant_1 :engine postgresql  :dbhost localhost :dbport 5432  :dbuser lumen :dbpassword password :exports code 
 \d  dataset_version
  #+END_SRC
 
-
+#+RESULTS:
  | Table "public.dataset_version" |                          |           |          |             |
  |--------------------------------+--------------------------+-----------+----------+-------------|
  | Column                         | Type                     | Collation | Nullable | Default     |
@@ -449,7 +379,11 @@ also in the url we expect following params
  | created                        | timestamp with time zone |           | not null | now()       |
  | modified                       | timestamp with time zone |           | not null | now()       |
 
+#+BEGIN_SRC sql :exports both :database lumen_tenant_1 :engine postgresql  :dbhost localhost :dbport 5432  :dbuser lumen :dbpassword password :exports code
+\d  dataset
+ #+END_SRC
 
+ #+RESULTS:
  | Table "public.dataset" |                          |           |          |          |
  |------------------------+--------------------------+-----------+----------+----------|
  | Column                 | Type                     | Collation | Nullable | Default  |
@@ -458,3 +392,14 @@ also in the url we expect following params
  | description            | text                     |           | not null | ''::text |
  | created                | timestamp with time zone |           | not null | now()    |
  | modified               | timestamp with time zone |           | not null | now()    |
+
+ 
+* TODO endpoint                                    	  
+
+ #+BEGIN_SRC clojure :tangle no
+ (require '[akvo.lumen.endpoint.aggregation :as e.aggregation])
+
+ (s/fdef e.aggregation/endpoint
+     :args (s/keys :req-un [::tenant-manager/tenant-manager])
+     :ret ::lib/response)
+ #+END_SRC

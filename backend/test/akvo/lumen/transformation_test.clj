@@ -27,7 +27,7 @@
 (hugsql/def-db-fns "akvo/lumen/transformation_test.sql")
 (hugsql/def-db-fns "akvo/lumen/transformation.sql")
 
-(use-fixtures :once tenant-conn-fixture error-tracker-fixture)
+(use-fixtures :once tenant-conn-fixture error-tracker-fixture instrument-fixture)
 
 (deftest op-validation
   (testing "op validation"

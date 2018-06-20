@@ -11,7 +11,7 @@
             [clojure.test :refer :all]
             [clojure.walk :refer (keywordize-keys)]))
 
-(use-fixtures :once tenant-conn-fixture error-tracker-fixture)
+(use-fixtures :once tenant-conn-fixture error-tracker-fixture instrument-fixture)
 
 (deftest ^:functional test-pivot
   (let [dataset-id (import-file *tenant-conn* *error-tracker* "pivot.csv" {:dataset-name "pivot"

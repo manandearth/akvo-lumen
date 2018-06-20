@@ -1,0 +1,561 @@
+* visualisation                                               :visualisation:
+#+BEGIN_SRC clojure :tangle no :session spec
+(remove-ns 'my.data.vis)
+(ns my.data.vis
+  (:require [clojure.data :refer (diff)]
+            [akvo.lumen.lib.visualisation :as lib.visualisation]
+            [akvo.lumen.specs.visualisation]
+            [akvo.lumen.specs.visualisation.layer]
+            [akvo.lumen.specs.core :as lumen.s]
+            [clojure.spec.alpha :as s]))
+;; vis data samples
+
+(defn d* [a b]
+  (butlast (diff a b)))
+
+(defn c*
+  "i'd like to use s/conform to validate and return but conform restructure data depending spec conditions
+  like s/or ..."
+  [spec data]
+  (if (s/valid? spec data)
+    data
+    (let [s (with-out-str (s/explain spec data))]
+      (throw (ex-info s {})))))
+
+;; create new vis
+(def a (c*
+        ::lib.visualisation/body
+        {:datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :name "Untitled visualisation",
+         :spec {:baseLayer "street", :layers [], :version 1},
+         :type "visualisation",
+         :visualisationType "map"}))
+
+;; add layer 
+(def b (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId nil,
+            :filters [],
+            :geom nil,
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title nil, :visible true},
+            :longitude nil,
+            :pointColorColumn nil,
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* a b)
+;; => [{:spec {:layers nil}}
+;;     {:created 1528973714897,
+;;      :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+;;      :modified 1528973714897,
+;;      :spec
+;;      {:layers
+;;       [{:aggregationMethod "avg",
+;;         :datasetId [:n nil],
+;;         :filters [],
+;;         :geom [:n nil],
+;;         :latitude [:v nil],
+;;         :layerType "geo-location",
+;;         :legend {:title [:n nil], :visible true},
+;;         :longitude [:v nil],
+;;         :pointColorColumn [:v nil],
+;;         :pointColorMapping [],
+;;         :pointSize 3,
+;;         :popup [],
+;;         :title "Untitled Layer 1",
+;;         :visible true}]},
+;;      :status "OK"}]
+
+
+;; add dataset
+(def c (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom nil,
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title nil, :visible true},
+            :longitude nil,
+            :pointColorColumn nil,
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* b c)
+;; => [{:spec {:layers [{:datasetId nil}]}}
+;;     {:spec
+;;      {:layers
+;;       [{:datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+;;         :rasterId nil}]}}]
+;; select geopoint ... => set geom!
+
+(def d (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title nil, :visible true},
+            :longitude nil,
+            :pointColorColumn nil,
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* c d)
+;; => [{:spec {:layers [{:geom nil}]}} {:spec {:layers [{:geom "d1"}]}}]
+
+;; select color coding column => lattitude
+(def e (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "latitude", :visible true},
+            :longitude nil,
+            :pointColorColumn "c2",
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* d e)
+;; => [{:spec {:layers [{:legend {:title nil}, :pointColorColumn nil}]}}
+;;     {:spec
+;;      {:layers [{:legend {:title "latitude"}, :pointColorColumn "c2"}]}}]
+
+
+;; select color coding column => city (text)
+(def e (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* d e)
+;; => [{:spec {:layers [{:legend {:title nil}, :pointColorColumn nil}]}}
+;;     {:spec
+;;      {:layers [{:legend {:title "city"}, :pointColorColumn "c1"}]}}]
+
+
+;; show legend => false
+(def f (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible false},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* e f)
+;; => [{:spec {:layers [{:legend {:visible true}}]}}
+;;     {:spec {:layers [{:legend {:visible false}}]}}]
+
+
+;; pop up city(text)
+(def g (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping [],
+            :pointSize 3,
+            :popup [{:column "c1"}],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* f g)
+;; => [{:spec {:layers [{:legend {:visible false}, :popup nil}]}}
+;;     {:spec
+;;      {:layers [{:legend {:visible true}, :popup [{:column "c1"}]}]}}]
+
+;; theme change point size
+(def h (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping [],
+            :pointSize "5",
+            :popup [{:column "c1"}],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* g h)
+;; => [{:spec {:layers [{:pointSize 3}]}}
+;;     {:spec {:layers [{:pointSize "5"}]}}]
+
+
+;; theme change color
+(def i (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters [],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping
+            [{:color "#c799ae", :op "equals", :value "Amsterdam"}
+             {:color "#c799ae", :op "equals", :value "Stockholm"}],
+            :pointSize "5",
+            :popup [{:column "c1"}],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+
+(d* h i)
+;; => [{:spec {:layers [{:pointColorMapping nil}]}}
+;;     {:spec
+;;      {:layers
+;;       [{:pointColorMapping
+;;         [{:color "#c799ae", :op "equals", :value "Amsterdam"}
+;;          {:color "#c799ae", :op "equals", :value "Stockholm"}]}]}}]
+
+
+;; filtering
+;; add filter
+(def j (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters
+            [{:column "c2",
+              :columnType "number",
+              :operation "keep",
+              :origin "filterMenu",
+              :strategy "isLower",
+              :value "100000"}],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping
+            [{:color "#c799ae", :op "equals", :value "Amsterdam"}
+             {:color "#c799ae", :op "equals", :value "Stockholm"}],
+            :pointSize "5",
+            :popup [{:column "c1"}],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+(d* i j)
+;; => [{:spec {:layers [{:filters nil}]}}
+;;     {:spec
+;;      {:layers
+;;       [{:filters
+;;         [{:column "c2",
+;;           :columnType "number",
+;;           :operation "keep",
+;;           :origin "filterMenu",
+;;           :strategy "isLower",
+;;           :value "100000"}]}]}}]
+
+
+;; another filter example after removing preovious one
+(def k (c*
+        ::lib.visualisation/body
+        {:created 1528973714897,
+         :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+         :id "5b224992-6a9b-4ad2-89a6-07a1549be7b2",
+         :modified 1528973714897,
+         :name "Untitled visualisation",
+         :spec
+         {:baseLayer "street",
+          :layers
+          [{:aggregationMethod "avg",
+            :datasetId "5b224983-5d13-4538-8044-6ffd7c2410ae",
+            :filters
+            [{:column "c2",
+              :columnType "number",
+              :operation "remove",
+              :origin "filterMenu",
+              :strategy "is",
+              :value "78"}],
+            :geom "d1",
+            :latitude nil,
+            :layerType "geo-location",
+            :legend {:title "city", :visible true},
+            :longitude nil,
+            :pointColorColumn "c1",
+            :pointColorMapping
+            [{:color "#c799ae", :op "equals", :value "Amsterdam"}
+             {:color "#c799ae", :op "equals", :value "Stockholm"}],
+            :pointSize "5",
+            :popup [{:column "c1"}],
+            :rasterId nil,
+            :title "Untitled Layer 1",
+            :visible true}],
+          :version 1},
+         :status "OK",
+         :type "visualisation",
+         :visualisationType "map"}))
+(d* i k)
+;; => [{:spec {:layers [{:filters nil}]}}
+;;     {:spec
+;;      {:layers
+;;       [{:filters
+;;         [{:column "c2",
+;;           :columnType "number",
+;;           :operation "remove",
+;;           :origin "filterMenu",
+;;           :strategy "is",
+;;           :value "78"}]}]}}]
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC clojure :tangle no :session spec
+(remove-ns 'my.data.transformation) 
+(ns my.data.transformation
+  (:require [clojure.data :refer (diff)]
+            [akvo.lumen.specs.core :as lumen.s]
+            [akvo.lumen.transformation :as transformation]
+            [akvo.lumen.transformation.engine :as transformation.engine]
+            [clojure.walk :refer (keywordize-keys)]
+            [clojure.spec.alpha :as s]
+            [akvo.lumen.specs.transformations]))
+
+(defn d* [a b]
+  (butlast (diff a b)))
+
+(defn c*
+  "i'd like to use s/conform to validate and return but conform restructure data depending spec conditions
+  like s/or ..."
+  [spec data]
+  (if (s/valid? spec data)
+    data
+    (let [s (with-out-str (s/explain spec data))]
+      (throw (ex-info s {})))))
+
+;; generate-geopoints
+(def a {:transformation
+        {:args
+         {:ColumnTitleGeo "",
+          :columnNameLat "c2",
+          :columnNameLong "c3",
+          :columnTitleGeo "asdasd"},
+         :onError "fail",
+         :op "core/generate-geopoints"},
+        :type :transformation})
+
+::transformation.engine/op-spec
+(transformation.engine/valid? (:transformation a))
+
+(c* ::transformation.engine/op-spec (:transformation a))
+(c* ::transformation/command a)
+;; => {:transformation
+;;     {"args"
+;;      {"ColumnTitleGeo" "",
+;;       "columnNameLat" "c2",
+;;       "columnNameLong" "c3",
+;;       "columnTitleGeo" "asdasd"},
+;;      "onError" "fail",
+;;      "op" "core/generate-geopoints"},
+;;     :type :transformation}
+
+
+
+;; core/combine
+(def b {:transformation
+        {:args
+         {:columnNames ["c1" "c1"], :newColumnTitle "yupie", :separator ","},
+         :onError "fail",
+         :op "core/combine"},
+        :type :transformation})
+
+(c* ::transformation/command b)
+;; => {:transformation
+;;     {"args"
+;;      {"columnNames" ["c1" "c1"],
+;;       "newColumnTitle" "yupie",
+;;       "separator" ","},
+;;      "onError" "fail",
+;;      "op" "core/combine"},
+;;     :type :transformation}
+#+END_SRC
+
+#+RESULTS:
+: #namespace[my.data.transformation]nil#'my.data.transformation/d*#'my.data.transformation/c*#'my.data.transformation/a{:transformation {"args" {"ColumnTitleGeo" "", "columnNameLat" "c2", "columnNameLong" "c3", "columnTitleGeo" "asdasd"}, "onError" "fail", "op" "core/generate-geopoints"}, :type :transformation}

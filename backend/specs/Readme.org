@@ -1,0 +1,71 @@
+#+SETUPFILE: /Users/tangrammer/git/org-html-themes/setup/theme-readtheorg.setup
+#+TITLE: akvo-lumen specs 
+* Welcome to specs generated with LP                                  :index:
+  
+This is the first interaction with [[https://clojure.org/guides/spec][clojure core.spec]]
+thus is a fresh topic at lumen codebase we're trying *Literate Programming (LP)* independent approach to write the specs
+
+Main idea of *LP* is that you write the code having a closer actitude of documenting a development process instead of writing as a super start cryptic haker that only a machine could follow
+
+The tools used for using *LP* are [[https://www.gnu.org/software/emacs/][Emacs]], [[https://orgmode.org/][orgmode]] and [[https://orgmode.org/worg/org-contrib/babel/][babel]]
+
+
+Following you'll find the main topics covered in lumen
+
+** specs
+
+*** TODO core
+    Here common utilities for defining lumen specs
+  - [ ] think about having generator in ~prod~ side ... ~sample~ functionality
+    #+INCLUDE: "core.org"
+  - [ ] testing ~:ret~ https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ is not possible (using raw clojure.spec)
+    - https://github.com/jeaye/orchestra option to test ~:ret~
+
+** aggregation                                                  :aggregation:
+
+ #+INCLUDE: "aggregation.org"  
+** visualisation                                              :visualisation:
+
+ #+INCLUDE: "visualisation.org"  
+** components                                                    :components:
+Lumen is a Component Oriented System, it uses [[https://github.com/duct-framework/duct][duct framework]] that follows [[https://github.com/stuartsierra/component][component]] library patterns
+Main idea behind component is ~Managed lifecycle of stateful objects in Clojure~ (IoC or DI)
+
+#+INCLUDE: "components.org" 
+** config                                                            :config:
+Configuration of lumen backend is done through [[https://github.com/akvo/akvo-lumen/blob/specs-lp/backend/resources/akvo/lumen/system.edn#L1][system.edn]]
+ #+INCLUDE: "config.org" 
+** db                                                                    :db:
+#+INCLUDE: "db.org" 
+** endpoints                                                      :endpoints:
+ #+INCLUDE: "endpoints.org" 
+** imports                                                          :imports:
+ #+INCLUDE: "imports.org" 
+** libs                                                                :libs:
+ #+INCLUDE: "libs.org" 
+** transformations                                          :transformations:
+ #+INCLUDE: "transformations.org" 
+
+* TODO specs problems to confront with  
+
+- [ ] how to naming alias pivot.row.s ... so far i've 2 kinds of nss specs ones and normal ones 
+specs ones ends in ~.s~ 
+
+the other problem to think about is how long this alias should be ... and which pattern to apply when we need to reduce naming
+
+** TODO sort maps and connect to CIDER
+https://github.com/bluekezza/clj-stable-pprint
+
+** TODO visual diff of clojure data
+
+
+* tools                                                               :index:
+
+** dev
+#+INCLUDE: "dev.org"
+
+
+* learning LP
+
+** tagging by domain, keep generic/abstract 
+so instead of tag ~tenant_manager~ use ~db~

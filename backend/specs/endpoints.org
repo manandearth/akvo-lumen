@@ -1,0 +1,95 @@
+#+PROPERTY: header-args:clojure :exports both
+#+PROPERTY: header-args:clojure+ :results silent
+#+PROPERTY: header-args:clojure+ :session lumen
+#+PROPERTY: header-args:clojure+ :padline yes
+#+PROPERTY: header-args:clojure+ :mkdirp yes
+#+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/endpoints.clj
+
+* specs.endpoints
+
+  #+BEGIN_SRC clojure
+  (ns akvo.lumen.specs.endpoints
+    (:require [clojure.spec.alpha :as s]
+
+	      [akvo.lumen.specs.core :as lumen.s]
+
+	      [akvo.lumen.specs.config :as config.s]
+
+	      [akvo.lumen.component.tenant-manager :as tenant-manager]
+
+	      [akvo.lumen.endpoint.collection :as collection]
+	      [akvo.lumen.endpoint.dashboard :as dashboard]
+	      [akvo.lumen.endpoint.dataset :as dataset]
+	      [akvo.lumen.endpoint.env :as env]
+	      [akvo.lumen.endpoint.files :as files]
+	      [akvo.lumen.endpoint.healthz :as healthz]
+	      [akvo.lumen.endpoint.invite :as invite]
+	      [akvo.lumen.endpoint.job-execution :as job-execution]
+	      [akvo.lumen.endpoint.library :as library]
+	      [akvo.lumen.endpoint.public :as public]
+	      [akvo.lumen.endpoint.raster :as raster]
+	      [akvo.lumen.endpoint.resource :as resource]
+	      [akvo.lumen.endpoint.root :as root]
+	      [akvo.lumen.endpoint.share :as share]
+	      [akvo.lumen.endpoint.tier :as tier]
+	      [akvo.lumen.endpoint.transformation :as transformation]
+	      [akvo.lumen.endpoint.user :as user]
+	      [akvo.lumen.endpoint.visualisation :as visualisation]
+	      [akvo.lumen.endpoint :as endpoint]
+	      ))
+
+  (s/fdef collection/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef dashboard/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  ;;	    [akvo.lumen.endpoint.dataset :as dataset] ;; [config error-tracker tenant-manager]
+
+  (s/fdef env/endpoint
+    :args (s/keys :req-un [::config.s/config]))
+
+  ;;	    [akvo.lumen.endpoint.files :as files] {{:keys [file-upload-path max-upload-size]} :config}
+
+  (s/fdef healthz/endpoint
+    :args (s/keys :req-un [::lumen.s/any]))
+
+  ;; (s/fdef invite/endpoint ;; [config emailer keycloak tenant-manager]
+  ;;   :args (s/keys :req-un [::lumen.s/any]))
+
+  (s/fdef job-execution/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef library/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef public/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager ::config.s/config]))
+
+  (s/fdef raster/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager ::config.s/config]))
+
+  (s/fdef resource/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef root/endpoint
+    :args (s/keys :req-un [::config.s/config]))
+
+  (s/fdef share/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef tier/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef transformation/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+
+  ;; (s/fdef user/endpoint ;; keycloak
+  ;;   :args (s/keys :req-un [::tenant-manager/tenant-manager]))
+
+  (s/fdef visualisation/endpoint
+    :args (s/keys :req-un [::tenant-manager/tenant-manager ::config.s/config]))
+
+	      #+END_SRC
+	      

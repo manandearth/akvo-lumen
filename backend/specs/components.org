@@ -1,0 +1,28 @@
+#+PROPERTY: header-args:clojure :exports both
+#+PROPERTY: header-args:clojure+ :results silent
+#+PROPERTY: header-args:clojure+ :session lumen
+#+PROPERTY: header-args:clojure+ :padline yes
+#+PROPERTY: header-args:clojure+ :mkdirp yes
+#+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/components.clj
+
+* specs.components
+
+  #+BEGIN_SRC clojure
+  (ns akvo.lumen.specs.components
+    (:require [clojure.spec.alpha :as s]
+	      [akvo.lumen.specs.core :as lumen.s]
+	      [akvo.lumen.specs.config :as config.s]
+	      [akvo.lumen.component.tenant-manager :as tenant-manager]
+	      [akvo.lumen.specs.db :as db.s]))
+
+  (s/def ::tenant-manager (s/keys :req-un [::db.s/db ::config.s/config]))
+  (s/def ::tenant-label string?)
+
+  (s/fdef tenant-manager/connection
+    :args (s/cat :this ::tenant-manager  :label ::tenant-label)
+    :ret ::db.s/spec)
+
+
+
+
+	      #+END_SRC

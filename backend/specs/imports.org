@@ -1,0 +1,75 @@
+#+PROPERTY: header-args:clojure :exports both
+#+PROPERTY: header-args:clojure+ :results silent
+#+PROPERTY: header-args:clojure+ :session lumen
+#+PROPERTY: header-args:clojure+ :padline yes
+#+PROPERTY: header-args:clojure+ :mkdirp yes
+#+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/imports.clj
+
+* specs.imports
+
+  #+BEGIN_SRC clojure
+  (ns akvo.lumen.specs.imports
+	(:require [clojure.spec.alpha :as s]
+		  [akvo.lumen.specs.core :as lumen.s]))
+#+END_SRC
+
+** flow-common
+
+  #+BEGIN_SRC clojure
+  (require '[akvo.lumen.import.flow-common :as flow-common])
+
+  (defn parse-int [s]
+    (try
+      (Integer. s)
+      (catch Exception e nil)))
+
+  (def flow-id-data (set (repeatedly 100 (fn [] (apply str (repeatedly 9 #(rand-int 9)))))))
+
+  (s/def ::flow-common/flow-id
+    (s/with-gen
+      (s/and string? (fn [s] (and (= (count s) 9)
+				  (parse-int s)
+				  (<= 0 (parse-int s) 999999999))))
+      #(s/gen flow-id-data)))
+
+  ;;     (s/exercise ::flow-id)
+
+
+  (s/def ::flow-common/question-group-id ::flow-common/flow-id)
+  (s/def ::flow-common/question-id ::flow-common/flow-id)
+
+  (s/def ::flow-common/responses
+    (s/map-of ::flow-common/question-group-id (s/coll-of
+					       (s/map-of ::flow-common/question-id
+							 ::lumen.s/any
+							 :gen-max 3) :gen-max 3)))
+
+
+
+  (s/fdef flow-common/question-responses
+    :args (s/keys :req [::flow-common/responses])
+    :ret (s/map-of ::flow-common/question-id ::lumen.s/any))
+
+
+#+END_SRC
+
+
+**** example/exercise data
+
+     https://clojure.org/guides/spec#_custom_generators
+     #+BEGIN_SRC clojure tangle no 
+
+     (ffirst (s/exercise ::flow-common/responses)) 
+
+     #+END_SRC
+
+     #+RESULTS:
+     | 261334557 | ((028463255 nil 146283337 nil) nil) | 018511368 | nil | 400668080 | nil | 318375370 | nil | 106732608 | ((110756161 nil)) | 137080300 | nil | 351805035 | nil | 164387401 | ((155032558 nil 088610352 nil) (087865741 nil 788663082 nil 088610352 nil) (068062771 nil)) | 788663082 | ((080747160 nil 015263766 nil 584841168 nil)) | 338337786 | ((006161615 nil 248722763 nil 011522633 nil) (147714708 nil 166057126 nil 217246440 nil) (150220158 nil 763725617 nil 261334557 nil)) |
+
+
+     #+BEGIN_SRC clojure :tangle no
+     (s/valid? ::flow-common/responses { "665994009" [{"665994009" "3"}]})
+     #+END_SRC
+
+     #+RESULTS:
+     : true

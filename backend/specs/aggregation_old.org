@@ -1,0 +1,47 @@
+#+PROPERTY: header-args:clojure :exports both
+#+PROPERTY: header-args:clojure+ :results value pp replace
+#+PROPERTY: header-args:clojure+ :session lumen
+#+PROPERTY: header-args:clojure+ :padline yes
+#+PROPERTY: header-args:clojure+ :mkdirp yes
+#+PROPERTY: header-args:clojure+ :tangle no
+
+
+#+BEGIN_SRC clojure
+(in-ns 'akvo.lumen.specs.aggregation)
+
+(defn c* [s q]
+  (if-not (s/valid? s q)
+    (s/explain s q)
+    (s/valid? s q)))
+
+[(c* ::l.aggregation.pivot/query {:decimalPlaces 3,
+                                   :hideColumnTotals false,
+                                   :filters [],
+                                   :rowTitle nil,
+                                   :hideRowTotals false,
+                                   :rowColumn nil,
+                                   :valueColumn nil,
+                                   :categoryColumn nil,
+                                   :aggregation "count",
+                                   :version 1,
+                                   :valueDisplay "default",
+                                  :categoryTitle nil})
+
+
+ (c* ::l.aggregation.pivot/query {:decimalPlaces 3,
+                                  :hideColumnTotals false,
+                                  :filters [],
+                                  :rowTitle nil,
+                                  :hideRowTotals false,
+                                  :rowColumn "c2",
+                                  :valueColumn nil,
+                                  :categoryColumn "c1",
+                                  :aggregation "count",
+                                  :version 1,
+                                  :valueDisplay "default",
+                                  :categoryTitle nil})
+ ]
+#+END_SRC
+
+#+RESULTS:
+: [true true]

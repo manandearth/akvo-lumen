@@ -1,0 +1,90 @@
+#+PROPERTY: header-args:clojure :exports both
+#+PROPERTY: header-args:clojure+ :results silent
+#+PROPERTY: header-args:clojure+ :session lumen
+#+PROPERTY: header-args:clojure+ :padline yes
+#+PROPERTY: header-args:clojure+ :mkdirp yes
+#+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/dataset.clj
+
+* dataset                                                           :dataset:
+
+** data example
+ #+BEGIN_SRC clojure  :tangle no
+  #_{:table-name "ds_0c487335_cdec_4c2d_b62a_40bdd3bbe07a",
+   :title "pie",
+   :created 1528472555080,
+   :modified 1528472555080,
+   :id "5b1aa3eb-b3c8-4774-9b75-c3ff0387411e",
+   :updated 1528472555094,
+   :columns
+   ({:sort nil,
+     :type "text",
+     :title "A",
+     :hidden false,
+     :direction nil,
+     :columnName "c1"}
+    {:sort nil,
+     :type "text",
+     :title "B",
+     :hidden false,
+     :direction nil,
+     :columnName "c2"}),
+   :transformations ()}
+
+
+ #+END_SRC
+
+  #+BEGIN_SRC clojure
+  (ns akvo.lumen.specs.dataset
+      (:require [clojure.spec.alpha :as s]
+		[akvo.lumen.specs.core :as lumen.s]
+		[akvo.lumen.specs.dataset.column :as dataset.column]
+		[akvo.lumen.lib.dataset :as l.dataset]))
+
+  (s/def ::column (s/keys :req-un [::dataset.column/columnName]
+			  :opt-un [::dataset.column/sort
+				   ::dataset.column/type
+				   ::dataset.column/title
+				   ::dataset.column/hidden
+				   ::dataset.column/direction]))
+
+
+  (s/def ::columns (s/coll-of ::column :gen-max 3))
+
+  (s/def ::table-name string?)
+  (s/def ::title string?)
+  (s/def ::created int?)
+  (s/def ::modified int?)
+  (s/def ::updated int?)
+  (s/def ::id string?)
+  (s/def ::transformations any?)
+  (s/def ::dataset (s/keys :req-un [::created
+				    ::id
+				    ::modified
+				    ::table-name
+				    ::title
+				    ::transformations
+				    ::updated]))
+
+  #+END_SRC
+
+** column                                                            :column:
+ #+BEGIN_SRC clojure :tangle ../src/akvo/lumen/specs/dataset/column.clj
+ (ns akvo.lumen.specs.dataset.column
+   (:require [clojure.spec.alpha :as s]
+	     [akvo.lumen.transformation.engine :as engine]
+	     [akvo.lumen.specs.core :as lumen.s]))
+
+ (s/def ::sort ::lumen.s/int-nullable)
+ (s/def ::type engine/valid-column-types)
+ (s/def ::hidden boolean?)
+ (s/def ::direction ::lumen.s/string-nullable)
+ (s/def ::title string?)
+ (s/def ::columnName (s/with-gen
+		       engine/valid-column-name?
+		       #(s/gen #{"c1" "c2" "c3" "c4"})))
+ #+END_SRC
+
+
+
+ #+RESULTS:
+ : nil:akvo.lumen.specs.dataset/table-name:akvo.lumen.specs.dataset/title:akvo.lumen.specs.dataset/created:akvo.lumen.specs.dataset/modified:akvo.lumen.specs.dataset/updated:akvo.lumen.specs.dataset/id:akvo.lumen.specs.dataset/transformations:akvo.lumen.specs.dataset/dataset

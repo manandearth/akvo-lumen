@@ -1,0 +1,77 @@
+* dev tasks
+
+** list specs
+
+#+name: specs
+#+BEGIN_SRC shell :exports results replace :results table
+ find ../src/akvo/lumen/specs -name "*.clj"
+ #+END_SRC      
+
+ #+RESULTS: specs
+ | ../src/akvo/lumen/specs/aggregation/pivot/row.clj                |
+ | ../src/akvo/lumen/specs/aggregation/query.clj                    |
+ | ../src/akvo/lumen/specs/aggregation.clj                          |
+ | ../src/akvo/lumen/specs/config.clj                               |
+ | ../src/akvo/lumen/specs/core.clj                                 |
+ | ../src/akvo/lumen/specs/dataset/column.clj                       |
+ | ../src/akvo/lumen/specs/dataset.clj                              |
+ | ../src/akvo/lumen/specs/db.clj                                   |
+ | ../src/akvo/lumen/specs/libs.clj                                 |
+ | ../src/akvo/lumen/specs/transformations/merge_dataset/source.clj |
+ | ../src/akvo/lumen/specs/transformations/merge_dataset/target.clj |
+ | ../src/akvo/lumen/specs/transformations/remove_sort.clj          |
+ | ../src/akvo/lumen/specs/transformations/to_lowercase.clj         |
+ | ../src/akvo/lumen/specs/transformations/to_titlecase.clj         |
+ | ../src/akvo/lumen/specs/transformations/to_uppercase.clj         |
+ | ../src/akvo/lumen/specs/transformations/trim.clj                 |
+ | ../src/akvo/lumen/specs/transformations/trim_doublespace.clj     |
+ | ../src/akvo/lumen/specs/transformations.clj                      |
+ | ../src/akvo/lumen/specs/visualisation/layer/legend.clj           |
+ | ../src/akvo/lumen/specs/visualisation/layer/spec.clj             |
+ | ../src/akvo/lumen/specs/visualisation/layer.clj                  |
+ | ../src/akvo/lumen/specs/visualisation.clj                        |
+
+
+
+#+BEGIN_SRC elisp  :var res=specs :exports results replace :results list
+
+(mapcar (lambda (file)
+	  (let* ((x (s-replace "../src/akvo/lumen/specs/" "" (car file)))
+		 (y (s-replace ".clj" ".org" x ))
+		 (z (concat "#+INCLUDE: \"" y "\"")))
+		 z)) res)
+
+
+
+#+END_SRC
+
+#+RESULTS:
+- #+INCLUDE: "config.org"
+- #+INCLUDE: "core.org"
+- #+INCLUDE: "db.org"
+- #+INCLUDE: "libs.org"
+- #+INCLUDE: "transformations.org"
+
+ 
+ 
+** remove compiled specs
+
+   #+BEGIN_SRC shell :exports code :results silent
+ find ../src/akvo/lumen/specs/*.clj | xargs rm
+
+ #+END_SRC      
+
+
+
+** compile specs 
+Taken from https://github.com/thi-ng/babel/blob/master/src/leiningen/new/thing_babel/tangle.sh
+
+#+BEGIN_SRC emacs-lisp :results silent :dir ./
+(mapc (lambda (file)
+            (find-file (expand-file-name file "."))
+            (org-babel-tangle)
+            (kill-buffer)) '("db.org" "core.org" "config.org"
+			     "libs.org" "endpoints.org" "transformations.org"
+			     "imports.org" "components.org" "aggregation.org")) 
+#+END_SRC
+

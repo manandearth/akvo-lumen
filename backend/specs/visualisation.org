@@ -4,11 +4,11 @@
 #+PROPERTY: header-args:clojure+ :padline yes
 #+PROPERTY: header-args:clojure+ :mkdirp yes
 #+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/visualisation.clj
-
+#+FILETAGS: :visualisation:
 * glossary
   raster graphics https://en.wikipedia.org/wiki/Raster_graphics#Etymology
  
-* lib.visualisation contents                                  :visualisation:
+* lib.visualisation contents
 
 Examining visualisation folder ... LOC & path
 

@@ -66,14 +66,18 @@ also included a function ~sample~ to generate sample data having a spec
   (reduce sample {} specs))
 #+END_SRC
 
+** TODO review if all integer specs should be positive integers
 
-** samples
+* generating sample data having specs
 
-   #+BEGIN_SRC clojure :tangle no :results value replace pp :exports both 
-   (in-ns 'akvo.lumen.specs.core)
+  #+BEGIN_SRC clojure :tangle no :results value replace pp :exports both 
+  (in-ns 'akvo.lumen.specs.core)
 
-   [::int-nullable (sample ::int-nullable)]
-   #+END_SRC
+  [::int-nullable (sample ::int-nullable)]
+  #+END_SRC
 
-   #+RESULTS:
-   : [:akvo.lumen.specs.core/int-nullable -129802810]
+  #+RESULTS:
+  : [:akvo.lumen.specs.core/int-nullable -129802810]
+
+** [[http://docs.cider.mx/en/latest/][CIDER]] can generate sample data from spec too
+http://docs.cider.mx/en/latest/miscellaneous_features/#spec-browser

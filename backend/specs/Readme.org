@@ -1,6 +1,9 @@
+#+OPTIONS: ^:nil
 #+SETUPFILE: /Users/tangrammer/git/org-html-themes/setup/theme-readtheorg.setup
 #+TITLE: akvo-lumen specs 
-* Welcome to specs generated with LP                                  :index:
+#+FILETAGS: :index:
+
+* Welcome to specs generated with LP                                  
   
 This is the first interaction with [[https://clojure.org/guides/spec][clojure core.spec]]
 thus is a fresh topic at lumen codebase we're trying *Literate Programming (LP)* independent approach to write the specs
@@ -12,26 +15,18 @@ The tools used for using *LP* are [[https://www.gnu.org/software/emacs/][Emacs]]
 
 Following you'll find the main topics covered in lumen
 
-* core
+* VERIFY core
 #+INCLUDE: "core.org"
 
-**** TODO think about having generator dep in ~prod~ side ... to get ~sample~ data functionality
-     ~[org.clojure/test.check "0.9.0" :scope "test"]~
-**** DONE testing ~:ret~ 
-     CLOSED: [2018-06-20 Wed 16:46]
-Following this [[https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ][thread]] is not possible (using plain clojure.spec lib) but there is other option to test it https://github.com/jeaye/orchestra 
-
-
-
-
-* aggregation                                                   :aggregation:
+* aggregation                                                   
 
 #+INCLUDE: "aggregation.org"  
-* visualisation                                               :visualisation:
+* visualisation                                               
 
 #+INCLUDE: "visualisation.org"  
 
-* TODO components
+* DELEGATED components
+  CLOSED: [2018-06-20 Wed 23:28]
 Lumen is a Component Oriented System, it uses [[https://github.com/duct-framework/duct][duct framework]] that follows [[https://github.com/stuartsierra/component][component]] library patterns
 Main idea behind component is ~Managed lifecycle of stateful objects in Clojure~ (IoC or DI)
 
@@ -41,22 +36,38 @@ Configuration of lumen backend is done through [[https://github.com/akvo/akvo-lu
  #+INCLUDE: "config.org" 
 * db                                                                     :db:
 #+INCLUDE: "db.org" 
-* TODO endpoints                                                  :endpoints:
+* DELEGATED endpoints                                             :endpoints:
+  CLOSED: [2018-06-20 Wed 23:28]
 these endopoints functions should be specified as [[https://clojure.org/guides/spec#_higher_order_functions][HOF]]
 
 ;; #+INCLUDE: "endpoints.org" 
-* TODO imports
+* DELEGATED imports
+  CLOSED: [2018-06-20 Wed 23:28]
 ;; #+INCLUDE: "imports.org" 
 * libs                                                                 :libs:
 #+INCLUDE: "libs.org" 
 * transformations                                           :transformations:
 #+INCLUDE: "transformations.org" 
 
-* TODO specs problems to confront with  
+* FAQs
 
-- [ ] [[https://github.com/akvo/akvo-lumen/issues/1441#issuecomment-398687412][how to naming schemas ns and aliases]]
-- [ ] the other problem to think about is how long this alias should be ... and which pattern to apply when we need to reduce naming
+** TODO explain where to put this stuff :) ?
+ explain why choose ~backend/src/akvo/lumen/specs/~ as org folder and why generated html has to live in ~docs~ folder
+** FEEDBACK ~[org.clojure/test.check "0.9.0" :scope "test"]~
+   only reason to have this ~test~ dependency in ~prod~ side is to be able to generate samples inside custom generator
+     
+** DONE investigate if clojure.spec can check value returned by function spec(ed)
+   CLOSED: [2018-06-20 Wed 22:28]
+clojure.spec only can check/instrument args in function call but no the value returned by the function. 
 
+Following this [[https://groups.google.com/forum/#!topic/clojure/JU6EmjtbRiQ][thread]] is not possible (using plain clojure.spec lib) but there is other option to test it https://github.com/jeaye/orchestra 
+
+
+
+
+** TODO [[https://github.com/akvo/akvo-lumen/issues/1441#issuecomment-398687412][how to naming schemas ns and aliases]]
+** TODO how to aliasing namespaces
+the other problem to think about is how long this alias should be ... and which pattern to apply when we need to reduce naming
 
 * tools                                                               :index:
 

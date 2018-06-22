@@ -4,7 +4,7 @@
 #+PROPERTY: header-args:clojure+ :padline yes
 #+PROPERTY: header-args:clojure+ :mkdirp yes
 #+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/aggregation.clj
-
+#+FILETAGS: :aggregation:
 * what's inside lib.aggregation?                                
 
 ** code analysis
@@ -28,11 +28,10 @@
 *So far, 4 namespaces filter, pie, pivot, utils and a main ns ~lib.aggregation~. Worth noting that utils namespace only contains 10LOC*
 
 ** logic analysis (functionality <=> dependencies)
-   aggregation namespace is used by [[./visualisation.org][visualisation domain]] 
+   [[/Users/tangrammer/git/akvo/akvo-lumen/backend/src/akvo/lumen/lib/aggregation/filter.clj::1][filter aggregation]] namespace is used by [[./visualisation.org][visualisation domain]] 
 **  pie & pivot aggregation types
 
 ** lib.aggregation a dispatcher 
-
 
 * lib.aggregation specs 
 
@@ -294,7 +293,6 @@
     :ret ::lib/response)
   #+END_SRC
   
-
 * testing specs                                                       :tests:
 
 *s/multi-spec* dispathing specs based in data props, in this case using ~:visualisation-type~
@@ -398,5 +396,4 @@
  #+END_SRC
 
 * FAQs                                                          :aggregation:
-
 ** TODO refactor visualization-type by aggregation-type

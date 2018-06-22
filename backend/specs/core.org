@@ -4,7 +4,7 @@
 #+PROPERTY: header-args:clojure+ :padline yes
 #+PROPERTY: header-args:clojure+ :mkdirp yes
 #+PROPERTY: header-args:clojure+ :tangle ../src/akvo/lumen/specs/core.clj
-
+#+FILETAGS: :core:
 * lumen.core specs
 
 base specs to be reused in other specs
@@ -43,7 +43,7 @@ also included a function ~sample~ to generate sample data having a spec
   (when (some? v)
     (try
       (int? (read-string v))
-      (catch Exception e (log/debug (format  "trying to parse string as int ...cant parse %s as int" v))))))
+      (catch Exception e false))))
 
 (s/def ::str-int
   (s/with-gen

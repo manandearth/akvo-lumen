@@ -7,4 +7,4 @@
       (throw (ex-info "No such column" {:columnName column-name})))))
 
 (defn load-columns [data columns]
-  (map #(assoc % :column (find-column columns (:column %))) data))
+  (map #(assoc % :column (find-column columns (:columnName %))) data))

@@ -5,11 +5,7 @@
                                          *error-tracker*
                                          error-tracker-fixture]]
             [akvo.lumen.lib :as lib]
-            [akvo.lumen.specs.config]
-            [akvo.lumen.specs.core :as lumen.s]
-            [akvo.lumen.specs.db :as db.s]
-            [akvo.lumen.specs.libs]
-            [akvo.lumen.specs.transformations]
+            [akvo.lumen.utils.specs]
             [akvo.lumen.test-utils :refer [import-file instrument-fixture with-instrument-disabled]]
             [akvo.lumen.transformation :as tf]
             [akvo.lumen.transformation.engine :as engine]
@@ -38,17 +34,6 @@
     (let [result (tf/validate {:type :transformation :transformation (second invalid-op)})]
       (is (= false (:valid? result)))
       (is (= (format "Invalid transformation %s" (second invalid-op)) (:message result))))))
-
-(deftest test-transformations-bis
-  (testing "Transformation application"
-    (log/error "starting Transformation application test")
-    (log/error "spec sample" (lumen.s/sample ::db.s/spec))
-    (log/error "transformation sample" (lumen.s/sample ::tf/transformation))
-    (is (thrown-with-msg?
-           ExceptionInfo
-           #"akvo.lumen.transformation/apply did not conform"
-           (tf/apply (lumen.s/sample ::db.s/spec) "Not-valid-id" [])))
-    (log/error "finishing Transformation application test")))
 
 (deftest ^:functional test-transformations
   (testing "Transformation application"

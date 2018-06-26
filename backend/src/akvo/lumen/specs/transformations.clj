@@ -1,9 +1,13 @@
 (ns akvo.lumen.specs.transformations
-  (:require [clojure.spec.alpha :as s]
+  (:require [akvo.lumen.lib :as lib]
+            [akvo.lumen.lib.dataset :as l.dataset]
             [akvo.lumen.specs.core :as lumen.s]
+            [akvo.lumen.specs.dataset :as dataset.s]
+            [akvo.lumen.specs.db :as db.s]
+            [akvo.lumen.specs.libs]
             [akvo.lumen.transformation :as transformation]
             [akvo.lumen.transformation.engine :as engine]
-            [akvo.lumen.specs.db :as db.s]))
+            [clojure.spec.alpha :as s]))
 
 (s/def ::transformation/transformation
   (s/with-gen
@@ -25,13 +29,8 @@
 (s/fdef transformation/apply
   :args ::transformation/apply-args)
 
-(require '[akvo.lumen.transformation.engine :as engine])
-
 (s/def ::engine/js-value-types #{"number" "text" "date"})
 
-(require '[akvo.lumen.specs.libs])
-(require '[akvo.lumen.lib.dataset :as l.dataset])
-(require '[akvo.lumen.lib :as lib])
 
 (s/def ::engine/error-strategy #{"leave-empty" "fail" "delete-row"})
 
@@ -66,7 +65,7 @@
 
 (s/def ::engine/try-apply-operation-args (s/cat :tenant-conn ::db.s/spec
                                                 :table-name string?
-                                                :columns (s/coll-of ::l.dataset/column :gen-max 3)
+                                                :columns (s/coll-of ::dataset.s/column :gen-max 3)
                                                 :op-spec ::engine/op-spec))
 
 (s/def ::engine/success? boolean?)
@@ -99,7 +98,7 @@
   :ret ::lib/response)
 
 (s/def ::engine/next-column-name-args
-  (s/coll-of ::l.dataset/column :gen-max 3))
+  (s/coll-of ::dataset.s/column :gen-max 3))
 
 (s/fdef engine/next-column-name
   :args (s/cat :columns ::engine/next-column-name-args)

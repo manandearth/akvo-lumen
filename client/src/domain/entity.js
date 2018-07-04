@@ -49,10 +49,7 @@ export function getAuthor(entity) {
   let author = get(entity, 'author');
   if (!author) return null;
   if (author.toJS) author = author.toJS();
-  const result = author ?
-    `${author.given_name ? `${author.given_name} ` : ''}${author.family_name ? author.family_name : ''}` :
-    '';
-  return result.length ? result : null;
+  return author && `${author.given_name} ${author.family_name}`;
 }
 
 export function isDataset(entity) {

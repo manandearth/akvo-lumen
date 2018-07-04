@@ -6,6 +6,7 @@ cache:
   directories:
   - "$HOME/.m2"
   - "$HOME/.lein"
+  - "$HOME/.cache"
   - "${HOME}/google-cloud-sdk"
 before_install:
 - if [[ ! -d "$HOME/.m2" ]]; then mkdir "$HOME/.m2"; fi;

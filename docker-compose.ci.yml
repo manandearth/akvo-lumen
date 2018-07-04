@@ -27,7 +27,7 @@ services:
    image: "eu.gcr.io/${PROJECT_NAME}/lumen-maps:${TRAVIS_COMMIT}"
 
  backend-functional-tests:
-   image: akvo-lumen-backend-dev:develop
+   image: akvo/akvo-lumen-backend-dev:dan-local
    volumes:
       - ./postgres/provision:/pg-certs
       - ./backend:/app

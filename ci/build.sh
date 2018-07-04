@@ -17,6 +17,18 @@ log Pulling backend-dev
 docker pull akvo/akvo-lumen-backend-dev:dan-local
 log Pulling e2e-tests
 docker pull akvo/akvo-lumen-e2e-tests:dan-local
+log Pulling redis
+docker pull redis:3.2.9
+log Pulling keycloak
+docker pull jboss/keycloak:3.4.3.Final
+log Pulling postgis
+docker pull mdillon/postgis:9.6
+log Pulling akvo-maps
+docker pull akvo/akvo-maps:da60926a
+log Pulling client-dev mhart/alpine-node
+docker pull mhart/alpine-node:8
+log Pulling client-prod nginx
+docker pull nginx:1.13.8-alpine
 
 log Running Backend unit tests and building uberjar
 docker run --env-file=.env -v "$HOME/.m2:/home/akvo/.m2" -v "$(pwd)/backend:/app" akvo/akvo-lumen-backend-dev:dan-local /app/run-as-user.sh lein "do" test, eastwood, uberjar

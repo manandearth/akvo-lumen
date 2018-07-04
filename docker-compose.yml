@@ -34,7 +34,7 @@ services:
    volumes:
       - ./postgres/provision:/pg-certs
  fe-e2e-tests:
-   build: client/e2e-test
+   image: akvo/akvo-lumen-e2e-tests:dan-local
    volumes:
       - ./client/e2e-test:/app
       - /app/node_modules

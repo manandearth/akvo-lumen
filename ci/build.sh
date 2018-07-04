@@ -11,8 +11,13 @@ if [ -z "$TRAVIS_COMMIT" ]; then
     export TRAVIS_COMMIT=local
 fi
 
-log Bulding container to run the backend tests
-#docker build --rm=false -t akvo-lumen-backend-dev:develop backend -f backend/Dockerfile-dev
+log Pulling backend-base
+docker pull akvo/akvo-lumen-backend-base:dan-local
+log Pulling backend-dev
+docker pull akvo/akvo-lumen-backend-dev:dan-local
+log Pulling e2e-tests
+docker pull akvo/akvo-lumen-e2e-tests:dan-local
+
 log Running Backend unit tests and building uberjar
 docker run --env-file=.env -v "$HOME/.m2:/home/akvo/.m2" -v "$(pwd)/backend:/app" akvo/akvo-lumen-backend-dev:dan-local /app/run-as-user.sh lein "do" test, eastwood, uberjar
 

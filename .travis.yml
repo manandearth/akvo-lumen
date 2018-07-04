@@ -14,6 +14,7 @@ before_install:
 - if [[ ! -d "$HOME/.cache" ]]; then mkdir "$HOME/.cache"; fi;
 - if [[ ! -d "$HOME/.cache/.npm" ]]; then mkdir "$HOME/.cache/.npm"; fi;
 - if [[ ! -d "$HOME/.cache/node_modules" ]]; then mkdir "$HOME/.cache/node_modules"; fi;
+
 - echo "HOST_UID=$(id -u)" >> .env
 - echo "HOST_GID=$(id -g)" >> .env
 - if [[ ! -f "${HOME}/google-cloud-sdk/bin/gcloud" ]]; then rm -rf "${HOME}/google-cloud-sdk";

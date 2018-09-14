@@ -25,6 +25,7 @@
            (= "/env" path-info)
            (= "/healthz" path-info)
            (s/starts-with? path-info "/share/")
+           (s/starts-with? path-info "/local-server/")
            (s/starts-with? path-info "/verify/"))))
 
 (defn admin-path? [{:keys [path-info]}]

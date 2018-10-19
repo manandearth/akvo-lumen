@@ -12,6 +12,7 @@
             [clojure.tools.namespace.repl :refer [refresh]]
             [duct.core :as duct]
             [duct.generate :as gen]
+            [akvo.lumen.local-server]
             [integrant.core :as ig]
             [integrant.repl :as ir]
             [integrant.repl.state :as state :refer (system)])

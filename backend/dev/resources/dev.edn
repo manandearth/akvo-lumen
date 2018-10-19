@@ -4,6 +4,9 @@
  :akvo.lumen.component.emailer/dev-emailer              {:config #ig/ref :akvo.lumen.config}
  :akvo.lumen.middleware.ring.stacktrace/wrap-stacktrace {}
  :akvo.lumen.component.caddisfly/local                  {:config #ig/ref :akvo.lumen.config}
+ :akvo.lumen.local-server/endpoint                      {}
+ :akvo.lumen.component.handler/handler                  {:endpoints [#ig/ref :akvo.lumen.local-server/endpoint]}
+
  :akvo.lumen.config
  {:app
   {:middleware

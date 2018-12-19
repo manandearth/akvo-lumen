@@ -21,12 +21,14 @@
              (format "akvo:lumen:%s:admin" tenant)))
 
 (defn public-path? [{:keys [path-info request-method]}]
-  (and (= :get request-method)
-       (or (= "/api" path-info)
-           (= "/env" path-info)
-           (= "/healthz" path-info)
-           (s/starts-with? path-info "/share/")
-           (s/starts-with? path-info "/verify/"))))
+  (or
+   (s/starts-with? path-info "/spec/")
+   (and (= :get request-method)
+        (or (= "/api" path-info)
+            (= "/env" path-info)
+            (= "/healthz" path-info)
+            (s/starts-with? path-info "/share/")
+            (s/starts-with? path-info "/verify/")))))
 
 (defn admin-path? [{:keys [path-info]}]
   (s/starts-with? path-info "/api/admin/"))

@@ -7,44 +7,47 @@
             [akvo.lumen.specs :as lumen.s]
             [clojure.spec.alpha :as s]
             [integrant.core :as ig]
+            [ring.middleware.transit :refer (wrap-transit-response)]
             [ring.util.response :refer [response]]))
+
+(defn spec* [ns id]
+  (keyword (str (apply str (next (seq ns))) "/" id)))
 
 (defn endpoint [_]
   (context "/spec" request
-           (context "/:ns/:id" [ns id]
-                    (let-routes [spec (keyword (str (apply str (next (seq ns))) "/" id))]
-                      (GET "/" _
-                           (lib/ok {:namespace ns
-                                    :id id
-                                    :ns spec
-                                    :spec (s/describe spec)}))
-                      (POST "/" {:keys [body] :as request} 
-                            (println  body)
-                            (lib/ok {:namespace ns
-                                     :body (str body)
-                                     :id id
-                                     :ns spec
-                                     :spec (s/describe spec)}))
-
-                      )
-                    )
-
-
+           (GET "/describe/:ns/:id" [ns id]
+                (lib/ok {:namespace ns
+                         :id id
+                         :ns (spec* ns id)
+                         :spec (s/describe (spec* ns id))}))
+           (wrap-transit-response
+            (POST "/valid/:ns/:id" [ns id]
+                  (log/error :raw request)
+                  (lib/ok {:namespace ns
+                           :body (:body request)
+                           :id id
+                           :ns (spec* ns id)
+                           :valid? (s/conform (spec* ns id) (:body request))}))
+            {:encoding :json, :opts {}})
+          
            ))
 
-(keyword (str (apply str (next (seq ":hola"))) "/" "id"))
+#_(s/conform :akvo.lumen.specs.import.column/type "text")
 
+#_(map first (s/exercise :akvo.lumen.specs.import.column/type))
 (defmethod ig/init-key :akvo.lumen.local-server/endpoint  [_ opts]
   (endpoint opts))
 
 (comment
   (-> (client/get
-       "http://t1.lumen.local:3000/spec/:akvo.lumen.specs.import.column/type/")
+       "http://t1.lumen.local:3000/spec/describe/:akvo.lumen.specs.import.column/type")
       :body
       (json/decode keyword))
   (-> (client/post
-       "http://t1.lumen.local:3000/spec/:akvo.lumen.specs.import.column/type/"
-       {:body (json/encode {"name" "group-name"})
-        :content-type :json})
+       "http://t1.lumen.local:3000/spec/conform/:akvo.lumen.specs.import.column/type"
+       {:form-params :text
+        :content-type :transit+json})
       :body
-      (json/decode keyword)))
+
+      )
+  )

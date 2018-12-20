@@ -6,7 +6,7 @@
   :min-lein-version "2.0.0"
   :dependencies [[clojurewerkz/scrypt "1.2.0"]
                  [ch.qos.logback/logback-classic "1.2.3"]
-                 [org.clojure/tools.logging "0.4.1"]
+                 [tangrammer/tools.logging "0.4.1"]
                  [org.slf4j/log4j-over-slf4j "1.7.25"]
                  [org.slf4j/jcl-over-slf4j "1.7.25"]
                  [org.slf4j/jul-to-slf4j "1.7.25"]
@@ -85,7 +85,9 @@
                                     [eftest "0.5.1"]
                                     [com.gearswithingears/shrubbery "0.4.1"]
                                     [kerodon "0.9.0"]
-                                    [robert/hooke "1.3.0"]]
+                                    [robert/hooke "1.3.0"]
+                                    [com.cognitect/transit-clj "0.8.313"]
+                                    [ring-transit "0.1.6"]]
                    :source-paths   ["dev/src" "specs"]
                    :resource-paths ["dev/resources" "test/resources"]
                    :repl-options   {:init-ns dev
@@ -101,6 +103,8 @@
                    :resource-paths ["test/resources"]
                    :dependencies [[org.clojure/test.check "0.10.0-alpha3"]
                                   [diehard "0.7.2" :exclusions [org.clojure/spec.alpha]]
-                                  [robert/hooke "1.3.0"]]
+                                  [robert/hooke "1.3.0"]
+                                  [com.cognitect/transit-clj "0.8.313"]
+                                  [ring-transit "0.1.6"]]
                    :env
                    {:db {:uri "jdbc:postgresql://postgres/lumen?user=lumen&password=password"}}}})

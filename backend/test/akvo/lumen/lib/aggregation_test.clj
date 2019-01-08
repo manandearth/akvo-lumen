@@ -1,23 +1,21 @@
-(ns akvo.lumen.lib.aggregation.pivot-test
+(ns akvo.lumen.lib.aggregation-test
   (:require [akvo.lumen.fixtures :refer [*tenant-conn*
                                          tenant-conn-fixture
                                          *error-tracker*
                                          error-tracker-fixture]]
-            [clojure.tools.logging :as log]
             [akvo.lumen.lib :as lib]
+            [akvo.lumen.lib.transformation :as tf]
             [akvo.lumen.lib.aggregation :as aggregation]
             [akvo.lumen.test-utils :refer [import-file]]
-            [akvo.lumen.lib.transformation :as tf]
             [clojure.test :refer :all]))
-
 
 (use-fixtures :once tenant-conn-fixture error-tracker-fixture)
 
 (deftest ^:functional test-pivot
   (let [data {:columns
-              [{:id :c1, :title "A", :type :text}
-               {:id :c2, :title "B", :type :text}
-               {:id :c3, :title "C", :type :text}],
+              [{:id :c1, :title "A", :type "text"}
+               {:id :c2, :title "B", :type "text"}
+               {:id :c3, :title "C", :type "text"}],
               :rows
               [[{:value "a1"} {:value "b1"} {:value "10"}]
                [{:value "a1"} {:value "b1"} {:value "11"}]
@@ -122,3 +120,23 @@
                 :rows [["b1" 10.5 10.0]
                        ["b2" 9.5 10.5]]
                 :metadata {:categoryColumnTitle "A"}}))))))
+
+(deftest ^:functional test-pie
+  (let [dataset-id (import-file *tenant-conn* *error-tracker*  {:file "pie.csv"
+                                                                :dataset-name "pie"
+                                                                :has-column-headers? true})
+        query (partial aggregation/query *tenant-conn* dataset-id "pie")]
+    (testing "Simple queries"
+      (let [[tag query-result] (query {"bucketColumn" "c1"})]
+        (is (= tag ::lib/ok))
+        (is (= query-result {:series [{:key "A", :label "A", :data [{:value 4} {:value 4}]}],
+                             :common
+                             {:data [{:key "a1", :label "a1"} {:key "a2", :label "a2"}],
+                              :metadata {:type "text"}}})))
+
+      (let [[tag query-result] (query {"bucketColumn" "c2"})]
+        (is (= tag ::lib/ok))
+        (is (= query-result {:series [{:key "B", :label "B", :data [{:value 5} {:value 3}]}],
+                             :common
+                             {:data [{:key "b1", :label "b1"} {:key "b2", :label "b2"}],
+                              :metadata {:type "text"}}}))))))

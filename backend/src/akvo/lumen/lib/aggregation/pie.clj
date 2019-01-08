@@ -13,7 +13,7 @@
 
 (defn query
   [tenant-conn {:keys [columns table-name]} query]
-  (let [columns (keywordize-keys columns)
+  (let [columns (vec (keywordize-keys columns))
         query (keywordize-keys query)
         filter-sql (sql-str columns (:filters query))
         bucket-column (find-column columns (:bucketColumn query))

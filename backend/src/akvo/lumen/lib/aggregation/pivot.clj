@@ -150,7 +150,7 @@
    :filters (:filters query)})
 
 (defn query [tenant-conn {:keys [columns table-name]} query]
-  (let [columns (keywordize-keys columns)
+  (let [columns (vec (keywordize-keys columns))
         query (build-query columns (keywordize-keys query))
         filter-str (sql-str columns (:filters query))]
     (lib/ok (merge (apply-query tenant-conn table-name query filter-str)

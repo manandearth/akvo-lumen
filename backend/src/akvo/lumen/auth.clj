@@ -12,13 +12,11 @@
 
 (defn tenant-user?
   [{:keys [tenant jwt-claims]}]
-  (contains? (claimed-roles jwt-claims)
-             (format "akvo:lumen:%s" tenant)))
+  true)
 
 (defn tenant-admin?
   [{:keys [tenant jwt-claims]}]
-  (contains? (claimed-roles jwt-claims)
-             (format "akvo:lumen:%s:admin" tenant)))
+  true)
 
 (defn public-path? [{:keys [path-info request-method]}]
   (and (= :get request-method)
@@ -65,8 +63,8 @@
   be configured via the KEYCLOAK_URL env var."
   [handler {:keys [keycloak-url keycloak-realm]}]
   (try
-    (let [issuer (str keycloak-url "/realms/" keycloak-realm)
-          certs (-> (str issuer "/protocol/openid-connect/certs")
+    (let [issuer "https://dantestakvo.eu.auth0.com/"
+          certs (-> "https://dantestakvo.eu.auth0.com/.well-known/jwks.json"
                     client/get
                     :body)]
       (jwt/wrap-jwt-claims handler (jwt/rsa-key certs 0) issuer))

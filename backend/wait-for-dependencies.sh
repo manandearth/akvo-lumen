@@ -8,16 +8,16 @@ ATTEMPTS=0
 
 echo "Waiting for Keycloak ..."
 
-while [[ -z "${KEYCLOAK}" && "${ATTEMPTS}" -lt "${MAX_ATTEMPTS}" ]]; do
-    sleep 1
-    KEYCLOAK=$( (curl -v "http://auth.lumen.local:8080/auth/realms/akvo/.well-known/openid-configuration" 2>&1 | grep "HTTP/1.1 200 OK") || echo "")
-    let ATTEMPTS+=1
-done
-
-if [[ -z "${KEYCLOAK}" ]]; then
-    echo "Keycloak is not available"
-    exit 1
-fi
+#while [[ -z "${KEYCLOAK}" && "${ATTEMPTS}" -lt "${MAX_ATTEMPTS}" ]]; do
+#    sleep 1
+#    KEYCLOAK=$( (curl -v "http://auth.lumen.local:8080/auth/realms/akvo/.well-known/openid-configuration" 2>&1 | grep "HTTP/1.1 200 OK") || echo "")
+#    let ATTEMPTS+=1
+#done
+#
+#if [[ -z "${KEYCLOAK}" ]]; then
+#    echo "Keycloak is not available"
+#    exit 1
+#fi
 
 echo "Keycloak is ready!"
 

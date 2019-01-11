@@ -64,7 +64,7 @@ function initNotAuthenticated(msg) {
 }
 
 function dispatchOnMode() {
-  const queryParams = queryString.parse(location.search);
+  const queryParams = queryString.parse(location.hash);
   const accessToken = queryParams.access_token;
   if (accessToken == null) {
     auth

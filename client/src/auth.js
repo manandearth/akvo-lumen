@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import fetch from 'isomorphic-fetch';
 import Keycloak from 'keycloak-js';
+import auth0 from 'auth0-js';
 import Raven from 'raven-js';
 import queryString from 'query-string';
 
@@ -30,61 +31,17 @@ export function refreshToken() {
   return keycloak.refreshToken;
 }
 
+let aauth0 = new auth0.WebAuth({
+  domain: 'dantestakvo.eu.auth0.com',
+  clientID: 'DhFdUkPQPwosdWatLsTYO3e85Tn9z7RE',
+  redirectUri: 'http://t1.lumen.local:3030/library',
+  audience: "https://foo.akvo.org",
+  responseType: 'token id_token',
+  scope: 'openid'
+});
+
 export function init() {
-  if (keycloak != null) {
-    throw new Error('Keycloak already initialized');
-  }
-  return fetch('/env')
-    .then(response => response.json())
-    .then(
-      ({ keycloakClient, keycloakURL, tenant, sentryDSN, flowApiUrl, piwikSiteId, exporterUrl }) =>
-        new Promise((resolve, reject) => {
-          if (process.env.NODE_ENV === 'production') {
-            Raven.config(sentryDSN).install();
-            Raven.setExtraContext({ tenant });
-          }
-          keycloak = new Keycloak({
-            url: keycloakURL,
-            realm: 'akvo',
-            clientId: keycloakClient,
-          });
-
-          const queryParams = queryString.parse(location.search);
-
-          keycloak
-            .init({
-              onLoad: 'login-required',
-              checkLoginIframe: false,
-              token: queryParams.token,
-              refreshToken: queryParams.refresh_token,
-            })
-            .success((authenticated) => {
-              if (authenticated) {
-                keycloak
-                  .loadUserProfile()
-                  .success((profile) => {
-                    if (process.env.NODE_ENV === 'production') {
-                      Raven.setUserContext(profile);
-                    }
-                    resolve({
-                      profile: Object.assign({}, profile, {
-                        admin: keycloak.hasRealmRole(`akvo:lumen:${tenant}:admin`),
-                      }),
-                      env: { flowApiUrl, keycloakURL, piwikSiteId, exporterUrl },
-                    });
-                  })
-                  .error(() => {
-                    reject(new Error('Could not load user profile'));
-                  });
-              } else {
-                reject(new Error('Could not authenticate'));
-              }
-            })
-            .error(() => {
-              reject(new Error('Login attempt failed'));
-            });
-        })
-    );
+    return aauth0.authorize();
 }
 
 export function initPublic() {
@@ -93,6 +50,20 @@ export function initPublic() {
     .then(env => ({ env }));
 }
 
+function handleAuthentication() {
+    aauth0.parseHash((err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        console.log("All good");
+      } else if (err) {
+        console.log(err);
+        alert(`Error: ${err.error}. Check the console for further details.`);
+      }
+    });
+  }
+
+
 export function initExport(providedAccessToken) {
+  handleAuthentication();
   return Promise.resolve((accessToken = providedAccessToken));
 }
+

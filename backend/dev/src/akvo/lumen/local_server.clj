@@ -14,23 +14,21 @@
            (context "/:ns/:id" [ns id]
                     (let-routes [spec (keyword (str (apply str (next (seq ns))) "/" id))]
                       (GET "/" _
-                           (lib/ok {:namespace ns
-                                    :id id
-                                    :ns spec
-                                    :spec (s/describe spec)}))
-                      (POST "/" {:keys [body] :as request} 
-                            (println  body)
+                           (do
+                             (log/error :inside ns id)
+                             (lib/ok {:namespace ns
+                                     :id id
+                                     :ns spec
+                                     :spec (s/describe spec)})))
+                      (POST "/" {:keys [body] :as request}
+                            (log/error :ID  (keys request) (:id request) )
+                            (println  body )
+
                             (lib/ok {:namespace ns
                                      :body (str body)
                                      :id id
                                      :ns spec
-                                     :spec (s/describe spec)}))
-
-                      )
-                    )
-
-
-           ))
+                                     :spec (s/describe spec)}))))))
 
 (keyword (str (apply str (next (seq ":hola"))) "/" "id"))
 
@@ -44,7 +42,8 @@
       (json/decode keyword))
   (-> (client/post
        "http://t1.lumen.local:3000/spec/:akvo.lumen.specs.import.column/type/"
-       {:body (json/encode {"name" "group-name"})
+       {:body (json/encode {"name" "group-name1"})
         :content-type :json})
       :body
-      (json/decode keyword)))
+      (json/decode keyword))
+  )

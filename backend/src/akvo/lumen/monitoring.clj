@@ -1,5 +1,6 @@
 (ns akvo.lumen.monitoring
-  (:require [iapetos.core :as prometheus]
+  (:require [clojure.tools.logging :as log]
+            [iapetos.core :as prometheus]
             [iapetos.collector.jvm :as jvm]
             [iapetos.collector.ring :as ring]
             [integrant.core :as ig])
@@ -16,10 +17,12 @@
       (ring/initialize {:labels [:tenant]})))
 
 (defmethod ig/init-key ::middleware [_ {:keys [collector]}]
-  #(-> %
-       (ring/wrap-metrics collector {:path-fn (constantly "unknown")
-                                     :label-fn (fn [request _]
-                                                 {:tenant (:tenant request)})})))
+  (fn [handler]
+    (ring/wrap-metrics handler collector {:path-fn (constantly "unknown")
+                                          :label-fn (fn [request response]
+                                                      (log/info :metric-path-to-monitoring (:metric-path response))
+                                                      {:tenant (:tenant request)
+                                                       :path (:metric-path response)})})))
 
 (comment
   (slurp "http://localhost:3000/metrics")

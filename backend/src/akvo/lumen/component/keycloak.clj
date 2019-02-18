@@ -278,6 +278,6 @@
 
 (defmethod ig/init-key :akvo.lumen.component.keycloak  [_ {:keys [config] :as opts}]
   (let [{:keys [issuer openid-config api-root] :as this} (keycloak (:keycloak config))
-        openid-config (fetch-openid-configuration "https://dantestakvo.eu.auth0.com/")]
+        openid-config (fetch-openid-configuration "https://akvotest.eu.auth0.com/")]
       (log/info "Successfully got openid-config from provider.")
       (assoc this :openid-config openid-config)))

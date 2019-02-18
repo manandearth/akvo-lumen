@@ -63,8 +63,8 @@
   be configured via the KEYCLOAK_URL env var."
   [handler {:keys [keycloak-url keycloak-realm]}]
   (try
-    (let [issuer "https://dantestakvo.eu.auth0.com/"
-          certs (-> "https://dantestakvo.eu.auth0.com/.well-known/jwks.json"
+    (let [issuer "https://akvotest.eu.auth0.com/"
+          certs (-> "https://akvotest.eu.auth0.com/.well-known/jwks.json"
                     client/get
                     :body)]
       (jwt/wrap-jwt-claims handler (jwt/rsa-key certs 0) issuer))

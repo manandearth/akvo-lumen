@@ -20,8 +20,8 @@
   :config {:encryption-key "secret"
            :file-upload-path "/tmp/akvo/lumen"
            :keycloak-realm "akvo"
-           :keycloak-url "https://dantestakvo.eu.auth0.com/authorize"
-           :keycloak-public-client-id "DhFdUkPQPwosdWatLsTYO3e85Tn9z7RE"
+           :keycloak-url "https://akvotest.eu.auth0.com/authorize"
+           :keycloak-public-client-id "D5LayiXP1pzq-6g2B_QVvzCw_eycZxQK"
            :flow-api-url "https://api.akvotest.org/flow"
            :invite-redirect {:client-port 3030
                              :scheme :http}
@@ -33,7 +33,7 @@
   :emailer {:from-email "devops@akvo.localhost"
             :from-name "Akvo Lumen"}
   :error-tracker {:dsn ""}
-  :keycloak      {:url   "https://dantestakvo.eu.auth0.com/authorize"
+  :keycloak      {:url   "https://akvotest.eu.auth0.com/authorize"
                   :realm "akvo"
                   :credentials
                   {"client_id"     "akvo-lumen-confidential"

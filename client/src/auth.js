@@ -32,10 +32,10 @@ export function refreshToken() {
 }
 
 let aauth0 = new auth0.WebAuth({
-  domain: 'dantestakvo.eu.auth0.com',
-  clientID: 'DhFdUkPQPwosdWatLsTYO3e85Tn9z7RE',
+  domain: 'akvotest.eu.auth0.com',
+  clientID: 'D5LayiXP1pzq-6g2B_QVvzCw_eycZxQK',
   redirectUri: 'http://t1.lumen.local:3030/library',
-  audience: "https://foo.akvo.org",
+  audience: "http://akvo.org",
   responseType: 'token id_token',
   scope: 'openid'
 });

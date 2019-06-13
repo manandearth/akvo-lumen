@@ -295,6 +295,19 @@ function BarConfigMenu(props) {
                   comparison: val,
                 })}
               />
+              <div> {spec.comparison == true ?
+                <ConfigMenuSectionOptionSelect
+                  id="metric_column"
+                  placeholderId="select_a_metric_column"
+                  labelTextId="metric_column"
+                  value={spec.metricColumnComparisonY !== null ? spec.metricColumnComparisonY.toString() : null}
+                  name="metricColumnComparisonYInput"
+                  options={filterColumns(columnOptions, ['number'])}
+                  onChange={value => handleChangeSpec({
+                    metricColumnComparisonY: value,
+                  }, spec, onChangeSpec, columnOptions)}
+                />
+                  : null }</div>
             </div>
             <ConfigMenuSectionOptionText
               value={spec.axisLabelY !== null ? spec.axisLabelY.toString() : null}

@@ -295,8 +295,9 @@ function BarConfigMenu(props) {
                   comparison: val,
                 })}
               />
+              {/* comparison conditional switch adding a second column to the Y axis */}
               <div> {spec.comparison == true ?
-                <ConfigMenuSectionOptionSelect
+                <div><ConfigMenuSectionOptionSelect
                   id="metric_column"
                   placeholderId="select_a_metric_column"
                   labelTextId="metric_column"
@@ -307,6 +308,18 @@ function BarConfigMenu(props) {
                     metricColumnComparisonY: value,
                   }, spec, onChangeSpec, columnOptions)}
                 />
+                  <ConfigMenuSectionOptionSelect
+                    placeholderId={'choose_aggregation_type'}
+                    labelTextId="aggregation_type"
+                    value={spec.metricComparisonAggregation.toString()}
+                    name="yComparisonAggregationMenu"
+                    options={aggregationOptions}
+                    disabled={spec.bucketColumn === null}
+                    onChange={value => handleChangeSpec({
+                      metricComparisonAggregation: value,
+                    }, spec, onChangeSpec, columnOptions)}
+                  />
+                </div>
                   : null }</div>
             </div>
             <ConfigMenuSectionOptionText

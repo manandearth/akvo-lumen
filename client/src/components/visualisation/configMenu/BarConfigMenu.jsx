@@ -283,15 +283,29 @@ function BarConfigMenu(props) {
           </div>
         )}
         advancedOptions={(
-          <ConfigMenuSectionOptionText
-            value={spec.axisLabelY !== null ? spec.axisLabelY.toString() : null}
-            placeholderId="y_axis_label"
-            name="yLabel"
-            onChange={event => handleChangeSpec({
-              axisLabelY: event.target.value.toString(),
-              axisLabelYFromUser: true,
-            }, spec, onChangeSpec, columnOptions)}
-          />
+          <div>
+            <div>
+              <ToggleInput
+                name="compareBuckets"
+                type="checkbox"
+                labelId="Comparison"
+                className="InputGroup"
+                checked={typeof spec.comparison !== 'undefined' ? spec.comparison : false}
+                onChange={val => onChangeSpec({
+                  comparison: val,
+                })}
+              />
+            </div>
+            <ConfigMenuSectionOptionText
+              value={spec.axisLabelY !== null ? spec.axisLabelY.toString() : null}
+              placeholderId="y_axis_label"
+              name="yLabel"
+              onChange={event => handleChangeSpec({
+                axisLabelY: event.target.value.toString(),
+                axisLabelYFromUser: true,
+              }, spec, onChangeSpec, columnOptions)}
+            />
+          </div>
         )}
       />
       <ConfigMenuSection

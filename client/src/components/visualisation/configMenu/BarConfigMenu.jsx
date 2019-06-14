@@ -48,6 +48,8 @@ const handleChangeSpec = (change, oldSpec, onChangeSpec, columnOptions) => {
     'metricAggregation',
     'metricColumnY',
     'metricColumnX',
+    'metricColumnComparisonY',
+    'metricComparisonAggregation',
     'sort',
   ];
 
@@ -304,6 +306,7 @@ function BarConfigMenu(props) {
                   value={spec.metricColumnComparisonY !== null ? spec.metricColumnComparisonY.toString() : null}
                   name="metricColumnComparisonYInput"
                   options={filterColumns(columnOptions, ['number'])}
+                  checked={false}
                   onChange={value => handleChangeSpec({
                     metricColumnComparisonY: value,
                   }, spec, onChangeSpec, columnOptions)}
